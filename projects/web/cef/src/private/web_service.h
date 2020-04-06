@@ -39,7 +39,7 @@ public:
 	// Browser crated callback will be called after a browser is created (asynchronously) and returns an ID for the browser.
 	// Use that id to interact with the browser after that.
 	// The instance ptr is used to clear the callback internally if the instance goes away before the browser has been created
-	void					createBrowser(const std::string& startUrl, void * instancePtr, std::function<void(int)> browserCreatedCallback, const bool isTransparent = true);
+	void					createBrowser(const std::string& startUrl, void * instancePtr, std::function<void(int)> browserCreatedCallback, const bool isTransparent = true,const bool useGPU = true);
 	void					cancelCreation(void * instancePtr);
 
 	// Asynchronously close the browser. This also clears any callbacks and no other commands will function. Assume the browser is dead after this call
@@ -105,9 +105,11 @@ public:
 	void					authCallbackContinue(const int browserId, const std::string& username, const std::string& password);
 
 	void					deleteCookies(const std::string& url, const std::string& cookies);
+	std::shared_ptr<d3d11::Device> getD3D11Device();
 
 protected:
 	virtual void			update(const ds::UpdateParams&);
+	
 #ifndef _WIN32
 	std::shared_ptr<std::thread>
 							mCefMessageLoopThread;

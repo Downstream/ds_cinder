@@ -18,9 +18,11 @@
 #include <ds/util/string_util.h>
 #include "private/web_service.h"
 #include "private/web_callbacks.h"
-
+#include "ppl.h"
 
 #include "include/cef_app.h"
+#include "osr_d3d11_gl_win.h"
+
 
 namespace {
 // Statically initialize the world class. Done here because the Body is
@@ -112,6 +114,9 @@ Web::Web( ds::ui::SpriteEngine &engine, float width, float height )
 	, mNeedsInitialized(false)
 	, mCallbacksCue(nullptr)
 	, mNativeTouchInput(true)
+	, mBrowserLayer(nullptr)
+	, mPopupLayer(nullptr)
+	, mAccelerated(true)
 {
 	// Should be unnecessary, but really want to make sure that static gets initialized
 	INIT.doNothing();
@@ -156,7 +161,7 @@ void Web::createBrowser() {
 			mHasCallbacks = true;
 		}
 
-	}, mTransparentBackground);
+	}, mTransparentBackground, mAccelerated);
 }
 
 void Web::clearBrowser() {
@@ -222,16 +227,31 @@ void Web::initializeBrowser(){
 	if(mBrowserId < 0){
 		return;
 	}
+	if(!mService.getD3D11Device() && mAccelerated)
+	{
+		return;
+	}
 
 	DS_LOG_INFO("Initialize browser: " << mUrl <<" " << mBrowserId);
 
 	mNeedsInitialized = false;
 
 	// Now that we know about the browser, set it to the correct size
-	if(!mBuffer){
-		onSizeChanged();
-	} else {
-		mService.requestBrowserResize(mBrowserId, mBrowserSize);
+	if (mAccelerated) {
+		if (!mBrowserLayer) {
+			onSizeChanged();
+		}
+		else {
+			mService.requestBrowserResize(mBrowserId, mBrowserSize);
+		}
+	}
+	else {
+		if (!mBuffer) {
+			onSizeChanged();
+		}
+		else {
+			mService.requestBrowserResize(mBrowserId, mBrowserSize);
+		}
 	}
 
 	loadUrl(mUrl);
@@ -288,12 +308,32 @@ void Web::initializeBrowser(){
 		// verify the buffer exists and is the correct size
 		// TODO: Add ability to redraw only the changed rectangles (which is what comes from CEF)
 		// Would be much more performant, especially for large browsers with small ui changes (like blinking cursors)
-
-		if(mBuffer && bufferWidth == mBrowserSize.x && bufferHeight == mBrowserSize.y) {
-			mHasBuffer = true;
-			//mBuffer = (unsigned char *)buffer;
-			memcpy(mBuffer, buffer, bufferWidth * bufferHeight * 4);
+		
+		if(mAccelerated && bufferHeight == -1 && bufferWidth == -1)
+		{
+			if (mBrowserLayer) {
+				mBrowserLayer->on_paint(const_cast<void*>(buffer));
+			}
 		}
+		else {
+			if (mBuffer && bufferWidth == mBrowserSize.x && bufferHeight == mBrowserSize.y) {
+				mHasBuffer = true;
+				//mBuffer = (unsigned char *)buffer;
+
+				/*
+				auto range = { 0,1,2,3 };
+				int chunk = bufferWidth * bufferHeight;
+				const char* tmp_buffer = static_cast<const char*>(buffer);
+				concurrency::parallel_for(0, 4, [&](int idx)
+				{
+					memcpy(mBuffer + chunk*idx, tmp_buffer + chunk*idx, chunk);
+				});
+				*/
+				memcpy(mBuffer, buffer, bufferWidth * bufferHeight * 4);
+				
+			}
+		}
+		
 	};
 
 	wcc.mPopupPaintCallback = [this](const void * buffer, const int bufferWidth, const int bufferHeight) {
@@ -302,19 +342,45 @@ void Web::initializeBrowser(){
 
 		// resize buffer if needed
 		if(mPopupBuffer && (bufferWidth != mPopupSize.x || bufferHeight != mPopupSize.y)) {
-			delete mPopupBuffer;
-			mPopupBuffer = nullptr;
+			if (mAccelerated)
+			{
+				mPopupLayer = std::shared_ptr<PopupLayer>(nullptr);
+			} else {
+				delete mPopupBuffer;
+				mPopupBuffer = nullptr;
+			} 
 		}
 
 		// create the buffer if needed
-		if(!mPopupBuffer) {
-			mPopupBuffer = new unsigned char[bufferWidth * bufferHeight * 4];
+		if (mAccelerated) {
+			if(!mPopupLayer)
+			{
+				if (mService.getD3D11Device()) {
+					mPopupLayer = std::make_shared<PopupLayer>(mService.getD3D11Device());
+					mPopupLayer->setTexture(bufferWidth, bufferHeight);
+				}
+			}
+		} else {
+			if (!mPopupBuffer) {
+				mPopupBuffer = new unsigned char[bufferWidth * bufferHeight * 4];
+			}
 		}
 
 		// if everything went ok
-		if(mPopupBuffer && bufferWidth == mPopupSize.x && bufferHeight == mPopupSize.y) {
-			mHasPopupBuffer = true;
-			memcpy(mPopupBuffer, buffer, bufferWidth * bufferHeight * 4);
+		if(bufferWidth == mPopupSize.x && bufferHeight == mPopupSize.y) {
+			if(mAccelerated)
+			{
+				if(mPopupLayer)
+				{
+					mPopupLayer->on_paint(const_cast<void*>(buffer));
+				}
+			}
+			else {
+				if (mPopupBuffer) {
+					mHasPopupBuffer = true;
+					memcpy(mPopupBuffer, buffer, bufferWidth * bufferHeight * 4);
+				}
+			}
 		}
 	};
 
@@ -324,9 +390,16 @@ void Web::initializeBrowser(){
 		mHasPopupBuffer = false;
 		
 		if(mPopupSize.x != widthy || mPopupSize.y != heighty) {
-			delete mPopupBuffer;
-			mPopupBuffer = nullptr;
+			if(mAccelerated)
+			{
+				mPopupLayer = std::shared_ptr<PopupLayer>(nullptr);
+			}
+			else {
+				delete mPopupBuffer;
+				mPopupBuffer = nullptr;
+			}
 			mPopupReady = false;
+				
 		}
 
 		mPopupPos = ci::vec2(xp, yp);
@@ -466,14 +539,19 @@ void Web::update(const ds::UpdateParams &p) {
 	// Anything that modifies mBuffer needs to be locked
 	std::lock_guard<std::mutex> lock(mMutex);
 
-	if(mBuffer && mHasBuffer) {
+	if(mBuffer && mHasBuffer && !mAccelerated) {
 		DS_LOG_VERBOSE(5, "Web: creating draw texture " << mUrl);
 
 		ci::gl::Texture::Format fmt;
 		fmt.enableMipmapping(true);
 		//fmt.setMinFilter(GL_LINEAR);
 		//fmt.setMagFilter(GL_LINEAR);
-		mWebTexture = ci::gl::Texture::create(mBuffer, GL_BGRA, mBrowserSize.x, mBrowserSize.y, fmt);
+		if (!mWebTexture || mWebTexture->getWidth()!=mBrowserSize.x || mWebTexture->getHeight() != mBrowserSize.y) {
+			mWebTexture = ci::gl::Texture::create(mBuffer, GL_BGRA, mBrowserSize.x, mBrowserSize.y, fmt);
+		}
+		else {
+			mWebTexture->update(mBuffer, GL_BGRA, GL_UNSIGNED_BYTE, 0, mBrowserSize.x, mBrowserSize.y);
+		}
 		mHasBuffer = false;
 	}
 
@@ -497,21 +575,39 @@ void Web::onSizeChanged() {
 		// Anything that modifies mBuffer needs to be locked
 		std::lock_guard<std::mutex> lock(mMutex);
 
+
 		const int theWid = static_cast<int>(getWidth());
 		const int theHid = static_cast<int>(getHeight());
 		const ci::ivec2 newBrowserSize(theWid, theHid);
-		if(newBrowserSize == mBrowserSize && mBuffer){
+		if (newBrowserSize == mBrowserSize && mBuffer) {
 			return;
 		}
 
 		mBrowserSize = newBrowserSize;
-		if(mBuffer) {
+
+		//accelerated renderers
+		if (mAccelerated)
+		{
+			if (mService.getD3D11Device()) {
+				mBrowserLayer = std::make_shared<BrowserLayer>(mService.getD3D11Device());
+				mBrowserLayer->setTexture(theWid, theHid);
+			}
+		}
+
+		if (mBuffer) {
 			delete mBuffer;
 			mBuffer = nullptr;
 		}
-		const int bufferSize = theWid * theHid * 4;
-		mBuffer = new unsigned char[bufferSize];
+
+		if (!mAccelerated) {
+			const int bufferSize = theWid * theHid * 4;
+			mBuffer = new unsigned char[bufferSize];
+		}
 		mHasBuffer = false;
+
+
+
+
 	}
 
 	DS_LOG_VERBOSE(4, "Web: changed size " << getSize() << " url=" << mUrl);
@@ -522,7 +618,25 @@ void Web::onSizeChanged() {
 }
 
 void Web::drawLocalClient() {
-	if(mWebTexture) {
+	auto localWebTexture = mWebTexture;
+	auto localPopupTexture = mPopupTexture;
+	if(mAccelerated)
+	{
+		if (mBrowserLayer) {
+			localWebTexture = mBrowserLayer->ofSharedTexture;
+		} else
+		{
+			localWebTexture = nullptr;
+		}
+		if (mPopupLayer) {
+			localPopupTexture = mPopupLayer->ofSharedTexture;
+		} else
+		{
+			localPopupTexture = nullptr;
+		}
+	}
+	
+	if(localWebTexture) {
 
 		DS_LOG_VERBOSE(8, "Web: drawing web " << mUrl);
 
@@ -541,11 +655,11 @@ void Web::drawLocalClient() {
 			mRenderBatch->draw();
 			mWebTexture->unbind();
 
-			if(mPopupTexture && mPopupShowing && mPopupReady) {
-				ci::gl::draw(mPopupTexture, ci::Rectf(static_cast<float>(mPopupPos.x), static_cast<float>(getHeight() - mPopupTexture->getHeight()) - mPopupPos.y, static_cast<float>( mPopupTexture->getWidth()) + mPopupPos.x, static_cast<float>(getHeight()) - mPopupPos.y));
+			if(localPopupTexture && mPopupShowing && mPopupReady) {
+				ci::gl::draw(localPopupTexture, ci::Rectf(static_cast<float>(mPopupPos.x), static_cast<float>(getHeight() - localPopupTexture->getHeight()) - mPopupPos.y, static_cast<float>( localPopupTexture->getWidth()) + mPopupPos.x, static_cast<float>(getHeight()) - mPopupPos.y));
 			}
 		} else {
-			ci::gl::draw(mWebTexture, ci::Rectf(0.0f, static_cast<float>(mWebTexture->getHeight()), static_cast<float>(mWebTexture->getWidth()), 0.0f));
+			ci::gl::draw(localWebTexture, ci::Rectf(0.0f, static_cast<float>(localWebTexture->getHeight()), static_cast<float>(localWebTexture->getWidth()), 0.0f));
 		}
 	}
 }
@@ -1088,6 +1202,59 @@ void Web::setAllowClicks(const bool doAllowClicks){
 
 void Web::deleteCookies(const std::string& url, const std::string& cookieName) {
 	mService.deleteCookies(url, cookieName);
+}
+
+Web::BrowserLayer::BrowserLayer(const std::shared_ptr<d3d11::Device>& device)
+	: d3d11::Layer(device) {
+}
+
+void Web::BrowserLayer::on_paint(void* share_handle) {
+	frame_buffer_->on_paint(share_handle);
+}
+
+std::pair<uint32_t, uint32_t> Web::BrowserLayer::texture_size() const {
+	const auto texture = frame_buffer_->texture();
+	return std::make_pair(texture->width(), texture->height());
+}
+
+Web::PopupLayer::PopupLayer(const std::shared_ptr<d3d11::Device>& device)
+	: BrowserLayer(device) {
+}
+
+void Web::PopupLayer::set_bounds(const CefRect& bounds) {
+	const auto comp = composition();
+	if (!comp)
+		return;
+
+	const auto outer_width = comp->width();
+	const auto outer_height = comp->height();
+	if (outer_width == 0 || outer_height == 0)
+		return;
+
+	original_bounds_ = bounds;
+	bounds_ = bounds;
+
+	// If x or y are negative, move them to 0.
+	if (bounds_.x < 0)
+		bounds_.x = 0;
+	if (bounds_.y < 0)
+		bounds_.y = 0;
+	// If popup goes outside the view, try to reposition origin
+	if (bounds_.x + bounds_.width > outer_width)
+		bounds_.x = outer_width - bounds_.width;
+	if (bounds_.y + bounds_.height > outer_height)
+		bounds_.y = outer_height - bounds_.height;
+	// If x or y became negative, move them to 0 again.
+	if (bounds_.x < 0)
+		bounds_.x = 0;
+	if (bounds_.y < 0)
+		bounds_.y = 0;
+
+	const auto x = bounds_.x / float(outer_width);
+	const auto y = bounds_.y / float(outer_height);
+	const auto w = bounds_.width / float(outer_width);
+	const auto h = bounds_.height / float(outer_height);
+	move(x, y, w, h);
 }
 
 } // namespace ui

@@ -22,7 +22,7 @@
 #include <ds/debug/logger.h>
 
 #include <cinder/app/KeyEvent.h>
-
+#include "accelerated_render_handler.h"
 namespace {
 
 	ds::web::WebHandler* g_instance = NULL;
@@ -33,10 +33,12 @@ namespace ds {
 namespace web {
 
 
-WebHandler::WebHandler()
+WebHandler::WebHandler():mD3d11_device(nullptr)
 {
 	DCHECK(!g_instance);
 	g_instance = this;
+	
+	
 }
 
 WebHandler::~WebHandler() {
@@ -110,6 +112,8 @@ void WebHandler::deleteCookies(const std::string& url, const std::string& cookie
 void WebHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
 	CEF_REQUIRE_UI_THREAD();
 
+	mD3d11_device = d3d11::Device::create();
+	if (!mD3d11_device) assert(0);
 
 	int browserIdentifier = browser->GetIdentifier();
 
@@ -421,6 +425,41 @@ void WebHandler::OnPaint(CefRefPtr<CefBrowser> browser,
 	}
 }
 
+void WebHandler::OnAcceleratedPaint(
+	CefRefPtr<CefBrowser> browser,
+	PaintElementType type,
+	const RectList& dirtyRects,
+	void* share_handle) {
+
+	// This callback comes back on the UI thread (so will need to be synchronized to the main app thread)
+	// be sure this is locked with other requests to the browser list
+	base::AutoLock lock_scope(mLock);
+
+	//TODO: Handle dirty rects
+
+	int browserId = browser->GetIdentifier();
+
+	//std::cout << "OnPaint, " << browserId << " type: " << type << " " << width << " " << height << std::endl;
+
+	auto findy = mWebCallbacks.find(browserId);
+	if (findy != mWebCallbacks.end()) {
+		if (type == PaintElementType::PET_VIEW) {
+			if (findy->second.mPaintCallback) {
+				//void * newBuffer = new unsigned char[width * height * 4];
+				//memcpy(newBuffer, buffer, width * height * 4);
+				//findy->second.mPaintCallback(newBuffer, width, height);
+				findy->second.mPaintCallback(share_handle, -1, -1);
+			}
+		}
+		else if (type == PaintElementType::PET_POPUP) {
+			if (findy->second.mPopupPaintCallback) {
+				findy->second.mPopupPaintCallback(share_handle, -1, -1);
+			}
+		}
+	}
+}
+
+	
 void WebHandler::OnCursorChange(CefRefPtr<CefBrowser> browser, CefCursorHandle cursor, CursorType type, const CefCursorInfo& custom_cursor_info){
 	// This is when it changes from a hand to a pointer, to a directional arrow, etc.
 //	std::cout << "On Cursor change : " << type << std::endl;

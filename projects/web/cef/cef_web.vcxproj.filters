@@ -705,6 +705,12 @@
     <ClInclude Include="..\..\..\src\stdafx.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\private\accelerated_render_handler.h">
+      <Filter>src\private</Filter>
+    </ClInclude>
+    <ClInclude Include="src\private\osr_d3d11_gl_win.h">
+      <Filter>src\private</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ds\ui\sprite\web.cpp">
@@ -720,6 +726,12 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\private\web_handler.cpp">
+      <Filter>src\private</Filter>
+    </ClCompile>
+    <ClCompile Include="src\private\accelerated_render_handler.cpp">
+      <Filter>src\private</Filter>
+    </ClCompile>
+    <ClCompile Include="src\private\osr_d3d11_gl_win.cc">
       <Filter>src\private</Filter>
     </ClCompile>
   </ItemGroup>

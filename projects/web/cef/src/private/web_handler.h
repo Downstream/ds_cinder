@@ -15,10 +15,12 @@
 #include <cinder/Vector.h>
 
 #include "web_callbacks.h"
+#include "osr_d3d11_gl_win.h"
 
 namespace ds {
 namespace web{
 
+	class AcceleratedRenderHandler;
 
 class WebHandler : public CefClient,
 	public CefDisplayHandler,
@@ -30,6 +32,7 @@ class WebHandler : public CefClient,
 	public CefKeyboardHandler,
 	public CefRequestHandler
 {
+	friend AcceleratedRenderHandler;
 public:
 	explicit WebHandler();
 	~WebHandler();
@@ -115,11 +118,13 @@ public:
 						 const RectList& dirtyRects,
 						 const void* buffer,
 						 int width, int height) OVERRIDE;
+	virtual void OnAcceleratedPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList& dirtyRects,
+		void* share_handle) OVERRIDE;
 
 	virtual void OnCursorChange(CefRefPtr<CefBrowser> browser,
-								CefCursorHandle cursor,
-								CursorType type,
-								const CefCursorInfo& custom_cursor_info) OVERRIDE;
+	                            CefCursorHandle cursor,
+	                            CursorType type,
+	                            const CefCursorInfo& custom_cursor_info) OVERRIDE;
 
 	virtual bool StartDragging(CefRefPtr<CefBrowser> browser,
 							   CefRefPtr<CefDragData> drag_data,
@@ -218,6 +223,7 @@ public:
 	// No browser ID cause cookies are global
 	// Url and cookie name are optional. Will delete all if not specified.
 	void					deleteCookies(const std::string& url, const std::string& cookieName);
+	std::shared_ptr<d3d11::Device>		getD3D11Device() { return mD3d11_device; }
 
 private:
 
@@ -239,9 +245,13 @@ private:
 	// The lock is used to ensure stuff that is immediately returned to the main app thread
 	// is synchronized with the rest of CEF
 	base::Lock											mLock;
+	CefRefPtr<CefRenderHandler>							mAltRenderHandler;
+	std::shared_ptr<d3d11::Device>						mD3d11_device;
+	
 
 	// Include the default reference counting implementation.
 	IMPLEMENT_REFCOUNTING(WebHandler);
+	
 };
 
 }

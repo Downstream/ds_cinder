@@ -199,10 +199,10 @@ void WebCefService::update(const ds::UpdateParams&) {
 	//CefDoMessageLoopWork();
 }
 
-void WebCefService::createBrowser(const std::string& startUrl, void * instancePtr, std::function<void(int)> createdCallback, const bool isTransparent){
+void WebCefService::createBrowser(const std::string& startUrl, void * instancePtr, std::function<void(int)> createdCallback, const bool isTransparent, const bool useGPU){
 	if(mCefSimpleApp){
 		try{
-			mCefSimpleApp->createBrowser(startUrl, instancePtr, createdCallback, isTransparent);
+			mCefSimpleApp->createBrowser(startUrl, instancePtr, createdCallback, isTransparent, useGPU);
 		} catch(std::exception& e){
 			DS_LOG_WARNING("WebCefService: Exception creating browser: " << e.what());
 		}
@@ -345,5 +345,15 @@ void WebCefService::deleteCookies(const std::string& url, const std::string& coo
 	}
 }
 
+std::shared_ptr<d3d11::Device> WebCefService::getD3D11Device()
+{
+	CefRefPtr<WebHandler> handler(WebHandler::GetInstance());
+	if (handler) {
+		return handler->getD3D11Device();
+	} else
+	{
+		return nullptr;
+	}
+}
 } // namespace web
 } // namespace ds

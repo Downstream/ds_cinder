@@ -7,6 +7,9 @@
 #include <ds/ui/soft_keyboard/entry_field.h>
 #include "ds/ui/sprite/text.h"
 
+#include "osr_d3d11_gl_win.h"
+#include "cef_render_handler.h"
+
 #include <mutex>
 #include <thread>
 
@@ -182,6 +185,38 @@ protected:
 	virtual void								readAttributeFrom(const char attributeId, ds::DataBuffer&);
 
 private:
+	//for rendering accelerated views
+	//===========================================
+	class BrowserLayer : public d3d11::Layer {
+	public:
+		explicit BrowserLayer(const std::shared_ptr<d3d11::Device>& device);
+		void on_paint(void* share_handle);
+
+		// After calling on_paint() we can query the texture size.
+		std::pair<uint32_t, uint32_t> texture_size() const;
+
+	private:
+
+		DISALLOW_COPY_AND_ASSIGN(BrowserLayer);
+	};
+
+	class PopupLayer : public BrowserLayer {
+	public:
+		explicit PopupLayer(const std::shared_ptr<d3d11::Device>& device);
+
+		void set_bounds(const CefRect& bounds);
+
+		bool contains(int x, int y) const { return bounds_.Contains(x, y); }
+		int xoffset() const { return original_bounds_.x - bounds_.x; }
+		int yoffset() const { return original_bounds_.y - bounds_.y; }
+
+	private:
+		CefRect original_bounds_;
+		CefRect bounds_;
+
+		DISALLOW_COPY_AND_ASSIGN(PopupLayer);
+	};
+	//===========================================
 
 	// For syncing touch input across client/servers
 	struct WebTouch {
@@ -310,6 +345,10 @@ private:
 
 	ci::CueRef									mCallbacksCue;
 
+	//gl/dx interop accelerated rendering
+	std::shared_ptr<BrowserLayer>				mBrowserLayer;
+	std::shared_ptr<PopupLayer>					mPopupLayer;
+	bool										mAccelerated;
 
 	// Initialization
 public:

@@ -19,6 +19,7 @@ public:
 
 	// Gets called when the browser sends new paint info, aka new buffers
 	std::function<void(const void *, const int, const int)> mPaintCallback;
+	
 
 	// Popups here are most commonly HTML select elements (drop down menus)
 	std::function<void(const void *, const int, const int)> mPopupPaintCallback;

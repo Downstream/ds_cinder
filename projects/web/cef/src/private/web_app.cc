@@ -54,6 +54,8 @@ void WebApp::OnBeforeCommandLineProcessing(const CefString& process_type, CefRef
 	//command_line->AppendSwitch("enable-begin-frame-scheduling");
 
 	//command_line->AppendSwitch("off-screen-rendering-enabled");
+	//command_line->AppendSwitch("shared-texture-enabled");
+	
 	command_line->AppendSwitchWithValue("off-screen-frame-rate", "60");
 	command_line->AppendSwitchWithValue(CefString("touch-optimized-ui"),CefString("enabled"));
 }
@@ -72,7 +74,7 @@ void WebApp::OnContextInitialized() {
 	mHandler = CefRefPtr<WebHandler>(new WebHandler());
 }
 
-void WebApp::createBrowser(const std::string& url, void * instancePtr, std::function<void(int)> createdCallback, const bool isTransparent){
+void WebApp::createBrowser(const std::string& url, void * instancePtr, std::function<void(int)> createdCallback, const bool isTransparent, const bool useGPU){
 
 	// Handler has an unused browser instance, so use that instead of creating a new one
 	if(mHandler && mHandler->hasOrphans()){
@@ -83,6 +85,8 @@ void WebApp::createBrowser(const std::string& url, void * instancePtr, std::func
 	// Specify CEF browser settings here.
 	CefBrowserSettings browser_settings;
 	browser_settings.windowless_frame_rate = 60;
+	
+	
 
 	// TODO: make a setting
 	//browser_settings.web_security = STATE_DISABLED;
@@ -103,12 +107,22 @@ void WebApp::createBrowser(const std::string& url, void * instancePtr, std::func
 
 	// Information used when creating the native window.
 	CefWindowInfo window_info;
-	window_info.SetAsWindowless(window);// , isTransparent);
-
+	
+	if (useGPU) {
+		window_info.SetAsWindowless(window);
+		window_info.shared_texture_enabled = true;
+		window_info.external_begin_frame_enabled = false;
+	
+	} else
+	{
+		window_info.SetAsWindowless(window);// , isTransparent);
+	}
+	
 	if(mHandler){
 		mHandler->addCreatedCallback(instancePtr, createdCallback);
 		// Create the first browser window.
 		CefBrowserHost::CreateBrowser(window_info, mHandler, url, browser_settings, NULL, NULL);
+		
 	} else {
 		DS_LOG_WARNING("No handler exists when trying to create a browser!");
 	}
