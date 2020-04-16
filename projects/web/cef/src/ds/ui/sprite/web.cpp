@@ -130,6 +130,8 @@ Web::Web( ds::ui::SpriteEngine &engine, float width, float height )
 		handleTouch(info);
 	});
 
+	mOnPaintContextRef = ci::gl::Context::create(ci::gl::Context::getCurrent());
+
 	DS_LOG_VERBOSE(4, "Web: creating CEF web sprite");
 
 	createBrowser();
@@ -283,17 +285,31 @@ void Web::initializeBrowser(){
 	wcc.mPaintCallback = [this](const void * buffer, const int bufferWidth, const int bufferHeight){
 
 		// This callback comes back from the CEF UI thread
-		std::lock_guard<std::mutex> lock(mMutex);
+		//std::lock_guard<std::mutex> lock(mMutex);
 
 		// verify the buffer exists and is the correct size
 		// TODO: Add ability to redraw only the changed rectangles (which is what comes from CEF)
 		// Would be much more performant, especially for large browsers with small ui changes (like blinking cursors)
+		
 
-		if(mBuffer && bufferWidth == mBrowserSize.x && bufferHeight == mBrowserSize.y) {
-			mHasBuffer = true;
-			//mBuffer = (unsigned char *)buffer;
-			memcpy(mBuffer, buffer, bufferWidth * bufferHeight * 4);
-		}
+		
+			mOnPaintContextRef->makeCurrent();
+			if (mWebTexture && mWebTexture->getWidth() == mBrowserSize.x && mWebTexture->getHeight() == mBrowserSize.y) {
+				mWebTexture->update(buffer, GL_BGRA, GL_UNSIGNED_BYTE, 0, mBrowserSize.x, mBrowserSize.y);
+			}
+			else {
+				ci::gl::Texture::Format fmt;
+				//fmt.enableMipmapping(true);
+				mWebTexture = ci::gl::Texture::create(buffer, GL_BGRA, mBrowserSize.x, mBrowserSize.y, fmt);
+			}
+			/*
+			if (mBuffer && bufferWidth == mBrowserSize.x && bufferHeight == mBrowserSize.y) {
+				mHasBuffer = true;
+				//mBuffer = (unsigned char *)buffer;
+				memcpy(mBuffer, buffer, bufferWidth * bufferHeight * 4);
+			}
+			*/
+		
 	};
 
 	wcc.mPopupPaintCallback = [this](const void * buffer, const int bufferWidth, const int bufferHeight) {
@@ -464,16 +480,24 @@ void Web::update(const ds::UpdateParams &p) {
 	}
 
 	// Anything that modifies mBuffer needs to be locked
-	std::lock_guard<std::mutex> lock(mMutex);
+	//std::lock_guard<std::mutex> lock(mMutex);
 
 	if(mBuffer && mHasBuffer) {
-		DS_LOG_VERBOSE(5, "Web: creating draw texture " << mUrl);
+		//DS_LOG_VERBOSE(5, "Web: creating draw texture " << mUrl);
 
-		ci::gl::Texture::Format fmt;
-		fmt.enableMipmapping(true);
+		
 		//fmt.setMinFilter(GL_LINEAR);
 		//fmt.setMagFilter(GL_LINEAR);
-		mWebTexture = ci::gl::Texture::create(mBuffer, GL_BGRA, mBrowserSize.x, mBrowserSize.y, fmt);
+		/*
+		if (mWebTexture && mWebTexture->getWidth() == mBrowserSize.x && mWebTexture->getHeight() == mBrowserSize.y) {
+			mWebTexture->update(mBuffer, GL_BGRA, GL_UNSIGNED_BYTE, 0, mBrowserSize.x, mBrowserSize.y);
+		}
+		else {
+			ci::gl::Texture::Format fmt;
+			//fmt.enableMipmapping(true);
+			mWebTexture = ci::gl::Texture::create(mBuffer, GL_BGRA, mBrowserSize.x, mBrowserSize.y, fmt);
+		}
+		*/
 		mHasBuffer = false;
 	}
 
