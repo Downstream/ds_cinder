@@ -116,7 +116,7 @@ Web::Web( ds::ui::SpriteEngine &engine, float width, float height )
 	, mNativeTouchInput(true)
 	, mBrowserLayer(nullptr)
 	, mPopupLayer(nullptr)
-	, mAccelerated(false)
+	, mAccelerated(true)
 	, mComposition(nullptr)
 {
 	// Should be unnecessary, but really want to make sure that static gets initialized
