@@ -116,7 +116,8 @@ Web::Web( ds::ui::SpriteEngine &engine, float width, float height )
 	, mNativeTouchInput(true)
 	, mBrowserLayer(nullptr)
 	, mPopupLayer(nullptr)
-	, mAccelerated(true)
+	, mAccelerated(false)
+	, mComposition(nullptr)
 {
 	// Should be unnecessary, but really want to make sure that static gets initialized
 	INIT.doNothing();
@@ -591,6 +592,11 @@ void Web::onSizeChanged() {
 			if (mService.getD3D11Device()) {
 				mBrowserLayer = std::make_shared<BrowserLayer>(mService.getD3D11Device());
 				mBrowserLayer->setTexture(theWid, theHid);
+
+				mComposition = std::make_shared<d3d11::Composition>(mService.getD3D11Device(), theWid, theHid);
+				mComposition->add_layer(mBrowserLayer);
+
+				mBrowserLayer->move(0.0f, 0.0f, 1.0f, 1.0f);
 			}
 		}
 
@@ -661,6 +667,9 @@ void Web::drawLocalClient() {
 		} else {
 			ci::gl::draw(localWebTexture, ci::Rectf(0.0f, static_cast<float>(localWebTexture->getHeight()), static_cast<float>(localWebTexture->getWidth()), 0.0f));
 		}
+	}
+	if (mComposition) {
+		mComposition->draw();
 	}
 }
 

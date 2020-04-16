@@ -967,4 +967,29 @@ struct CefCompositionUnderlineTraits {
 ///
 typedef CefStructBase<CefCompositionUnderlineTraits> CefCompositionUnderline;
 
+struct CefAudioParametersTraits {
+  typedef cef_audio_parameters_t struct_type;
+
+  static inline void init(struct_type* s) {
+    s->channel_layout = CEF_CHANNEL_LAYOUT_NONE;
+    s->sample_rate = 0;
+    s->frames_per_buffer = 0;
+  }
+
+  static inline void clear(struct_type* s) {}
+
+  static inline void set(const struct_type* src,
+                         struct_type* target,
+                         bool copy) {
+    target->channel_layout = src->channel_layout;
+    target->sample_rate = src->sample_rate;
+    target->frames_per_buffer = src->frames_per_buffer;
+  }
+};
+
+///
+// Class representing CefAudioParameters settings
+///
+typedef CefStructBase<CefAudioParametersTraits> CefAudioParameters;
+
 #endif  // CEF_INCLUDE_INTERNAL_CEF_TYPES_WRAPPERS_H_

@@ -39,7 +39,7 @@ public:
 
 	// Provide access to the single global instance of this object.
 	static WebHandler* GetInstance();
-
+	
 	// CefClient methods:
 	virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() OVERRIDE{
 		return this;
@@ -247,7 +247,7 @@ private:
 	base::Lock											mLock;
 	CefRefPtr<CefRenderHandler>							mAltRenderHandler;
 	std::shared_ptr<d3d11::Device>						mD3d11_device;
-	
+	std::shared_ptr<d3d11::SwapChain>					mSwapChain;
 
 	// Include the default reference counting implementation.
 	IMPLEMENT_REFCOUNTING(WebHandler);

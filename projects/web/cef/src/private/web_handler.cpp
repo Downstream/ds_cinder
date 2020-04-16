@@ -115,6 +115,8 @@ void WebHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
 	mD3d11_device = d3d11::Device::create();
 	if (!mD3d11_device) assert(0);
 
+	mSwapChain = mD3d11_device->create_swapchain((HWND)(ci::app::getWindow()->getNative()));
+
 	int browserIdentifier = browser->GetIdentifier();
 
 	{

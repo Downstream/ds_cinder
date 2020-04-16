@@ -53,8 +53,9 @@ void WebApp::OnBeforeCommandLineProcessing(const CefString& process_type, CefRef
 	//command_line->AppendSwitch("disable-surfaces");
 	//command_line->AppendSwitch("enable-begin-frame-scheduling");
 
-	//command_line->AppendSwitch("off-screen-rendering-enabled");
-	//command_line->AppendSwitch("shared-texture-enabled");
+	command_line->AppendSwitch("off-screen-rendering-enabled");
+	command_line->AppendSwitch("shared-texture-enabled");
+	command_line->AppendSwitch("use-gl-desktop");
 	
 	command_line->AppendSwitchWithValue("off-screen-frame-rate", "60");
 	command_line->AppendSwitchWithValue(CefString("touch-optimized-ui"),CefString("enabled"));
@@ -87,6 +88,7 @@ void WebApp::createBrowser(const std::string& url, void * instancePtr, std::func
 	browser_settings.windowless_frame_rate = 60;
 	
 	
+	
 
 	// TODO: make a setting
 	//browser_settings.web_security = STATE_DISABLED;
@@ -109,9 +111,10 @@ void WebApp::createBrowser(const std::string& url, void * instancePtr, std::func
 	CefWindowInfo window_info;
 	
 	if (useGPU) {
-		window_info.SetAsWindowless(window);
+		window_info.SetAsWindowless(nullptr);
 		window_info.shared_texture_enabled = true;
-		window_info.external_begin_frame_enabled = false;
+	
+		//window_info.external_begin_frame_enabled = false;
 	
 	} else
 	{

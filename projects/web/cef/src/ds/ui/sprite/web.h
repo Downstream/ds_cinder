@@ -347,6 +347,7 @@ private:
 
 	//gl/dx interop accelerated rendering
 	std::shared_ptr<BrowserLayer>				mBrowserLayer;
+	std::shared_ptr<d3d11::Composition>			mComposition;
 	std::shared_ptr<PopupLayer>					mPopupLayer;
 	bool										mAccelerated;
 
