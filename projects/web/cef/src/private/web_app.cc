@@ -53,7 +53,7 @@ void WebApp::OnBeforeCommandLineProcessing(const CefString& process_type, CefRef
 	//command_line->AppendSwitch("disable-surfaces");
 	//command_line->AppendSwitch("enable-begin-frame-scheduling");
 
-	//command_line->AppendSwitch("off-screen-rendering-enabled");
+	command_line->AppendSwitch("off-screen-rendering-enabled");
 	command_line->AppendSwitchWithValue("off-screen-frame-rate", "60");
 	command_line->AppendSwitchWithValue(CefString("touch-optimized-ui"),CefString("enabled"));
 }
@@ -103,7 +103,7 @@ void WebApp::createBrowser(const std::string& url, void * instancePtr, std::func
 
 	// Information used when creating the native window.
 	CefWindowInfo window_info;
-	window_info.SetAsWindowless(window);// , isTransparent);
+	window_info.SetAsWindowless(nullptr);// , isTransparent);
 
 	if(mHandler){
 		mHandler->addCreatedCallback(instancePtr, createdCallback);

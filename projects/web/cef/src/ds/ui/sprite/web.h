@@ -310,8 +310,7 @@ private:
 
 	ci::CueRef									mCallbacksCue;
 
-	ci::gl::ContextRef							mOnPaintContextRef;
-	ci::gl::ContextRef							mMainContextRef;
+
 
 
 	// Initialization
