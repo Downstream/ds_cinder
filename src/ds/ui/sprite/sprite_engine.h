@@ -176,6 +176,7 @@ public:
 	virtual bool					isIdling() = 0;
 
 	virtual void					clearFingers( const std::vector<int> &fingers );
+	virtual void					clearFingersForSprite(ui::Sprite* theSprite) {};
 	virtual void					setSpriteForFinger( const int fingerId, ui::Sprite* theSprite ) = 0;
 	virtual ui::Sprite*				getSpriteForFinger( const int fingerId ) = 0;
 

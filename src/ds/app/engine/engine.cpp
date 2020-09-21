@@ -151,19 +151,80 @@ void Engine::setupSrcDstRects(){
 	// Src rect and dst rect are new, and should obsolete local_rect. For now, default to illegal values,
 	// which makes them get ignored and default to the main display
 
-	mData.mSrcRect = mSettings.getRect("src_rect");
-	mData.mDstRect = mSettings.getRect("dst_rect");
+	auto screenMode = mSettings.getString("screen:mode");
+	ds::to_lowercase(screenMode);
+	bool isFullscreen = screenMode.find("full") != std::string::npos;
 
-	if(mData.mDstRect.getWidth() < 1 || mData.mDstRect.getHeight() < 1){
-		DS_LOG_WARNING("Screen rect is 0 width or height. Overriding to full screen size");
+	auto autoSizeMode = mSettings.getString("screen:auto_size");
+	ds::to_lowercase(autoSizeMode);
+
+	if(autoSizeMode == "all_span"){
+		mSettings.getSetting("span_all_displays", 0).mRawValue = "true";
+		return;
+	} else if (autoSizeMode == "main_span" || autoSizeMode == "letterbox") {
 		ci::DisplayRef mainDisplay = ci::Display::getMainDisplay();
-		ci::Rectf mainDisplayRect = ci::Rectf(0.0f, 0.0f, (float)mainDisplay->getWidth(), (float)mainDisplay->getHeight());
-		mData.mSrcRect = mainDisplayRect;
-		mData.mDstRect = mainDisplayRect;
-		if(mData.mWorldSize.x < 1 || mData.mWorldSize.y < 1){
+		const ci::Rectf mainDisplayRect = ci::Rectf(0.0f, 0.0f, (float)mainDisplay->getWidth(), (float)mainDisplay->getHeight());
+		ci::Rectf newSrcRect = mainDisplayRect;
+		ci::Rectf newDstRect = mainDisplayRect;
+
+		if (autoSizeMode == "letterbox"
+			&& (mainDisplayRect.getWidth() != mData.mWorldSize.x|| mainDisplayRect.getHeight() != mData.mWorldSize.y)
+			&& mData.mWorldSize.x > 0 && mData.mWorldSize.y > 0
+			) {
+
+			// a = w / h
+			// w = ah
+			// h = w / a
+			float mainDispAsp = mainDisplayRect.getWidth() / mainDisplayRect.getHeight();
+			float worldAsp = mData.mWorldSize.x / mData.mWorldSize.y;
+			newSrcRect = ci::Rectf(0.0f, 0.0f, mData.mWorldSize.x, mData.mWorldSize.y);
+			
+			// same aspect ratio: scale to fill the screen
+			if (mainDispAsp == worldAsp) {
+				newDstRect = mainDisplayRect;
+
+			// pillarbox
+			} else if (mainDispAsp > worldAsp) {
+				float newW = mainDisplayRect.getHeight() * worldAsp;
+				newDstRect = ci::Rectf(mainDisplayRect.getWidth() / 2.0f - newW / 2.0f, 0.0f, mainDisplayRect.getWidth() / 2.0f + newW / 2.0f, mainDisplayRect.getHeight());
+
+			// letterbox
+			} else {
+				float newH = mainDisplayRect.getWidth() / worldAsp;
+				newDstRect = ci::Rectf(0.0f, mainDisplayRect.getHeight() / 2.0f - newH / 2.0f, mainDisplayRect.getWidth(), mainDisplayRect.getHeight() / 2.0f + newH / 2.0f);
+
+			}
+		} 
+
+		/// avoid windows' dumb auto-fullscreen thing
+		if (!isFullscreen && newDstRect.getWidth() == mainDisplayRect.getWidth() && newDstRect.getHeight() == mainDisplayRect.getHeight()) {
+				
+			newSrcRect.x2 += 1;
+			newDstRect.x2 += 1;
+		}
+
+		mData.mSrcRect = newSrcRect;
+		mData.mDstRect = newDstRect;
+		if (mData.mWorldSize.x < 1 || mData.mWorldSize.y < 1) {
 			mData.mWorldSize = ci::vec2(mainDisplayRect.getWidth(), mainDisplayRect.getHeight());
 		}
+	} else {
+		mData.mSrcRect = mSettings.getRect("src_rect");
+		mData.mDstRect = mSettings.getRect("dst_rect");
+
+		if (mData.mDstRect.getWidth() < 1 || mData.mDstRect.getHeight() < 1) {
+			DS_LOG_WARNING("Screen rect is 0 width or height. Overriding to full screen size");
+			ci::DisplayRef mainDisplay = ci::Display::getMainDisplay();
+			ci::Rectf mainDisplayRect = ci::Rectf(0.0f, 0.0f, (float)mainDisplay->getWidth(), (float)mainDisplay->getHeight());
+			mData.mSrcRect = mainDisplayRect;
+			mData.mDstRect = mainDisplayRect;
+			if (mData.mWorldSize.x < 1 || mData.mWorldSize.y < 1) {
+				mData.mWorldSize = ci::vec2(mainDisplayRect.getWidth(), mainDisplayRect.getHeight());
+			}
+		}
 	}
+
+	
 	ci::app::getWindow()->setPos(mData.mDstRect.getUpperLeft());
 	ci::app::getWindow()->setSize(mData.mDstRect.getSize());
 
@@ -491,7 +552,6 @@ bool Engine::isShowingSettingsEditor(){
 void Engine::setup(ds::App& app) {
 
 	mCinderWindow = app.getWindow();
-	//mCinderWindow->spanAllDisplays
 
 	mTouchTranslator.setTranslation(mData.mSrcRect.x1, mData.mSrcRect.y1);
 	mTouchTranslator.setScale(mData.mSrcRect.getWidth() / ci::app::getWindowWidth(), mData.mSrcRect.getHeight() / ci::app::getWindowHeight());

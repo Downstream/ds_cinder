@@ -203,6 +203,8 @@ Sprite::~Sprite() {
 	animStop();
 	cancelDelayedCall();
 
+	mEngine.clearFingersForSprite(this);
+
 	mEngine.removeFromDragDestinationList(this);
 
 	// We only want to request a delete for the sprite at the head of a tree,

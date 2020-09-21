@@ -208,7 +208,8 @@ public:
 	ds::ui::Sprite*						getHit(const ci::vec3& point);
 
 	ui::TouchManager&					getTouchManager(){ return mTouchManager; }
-	virtual void						clearFingers( const std::vector<int> &fingers );
+	virtual void						clearFingers(const std::vector<int> &fingers);
+	virtual void						clearFingersForSprite(ui::Sprite* theSprite) { mTouchManager.clearFingersForSprite(theSprite); }
 	void								setSpriteForFinger( const int fingerId, ui::Sprite* theSprite ){ mTouchManager.setSpriteForFinger(fingerId, theSprite); }
 	ds::ui::Sprite*						getSpriteForFinger( const int fingerId ){ return mTouchManager.getSpriteForFinger(fingerId); }
 	virtual bool						shouldDiscardTouch( ci::vec2& p ){ return mTouchManager.shouldDiscardTouch(p); }
