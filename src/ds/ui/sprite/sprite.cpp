@@ -165,6 +165,8 @@ void Sprite::init(const ds::sprite_id_t id) {
 	mDelayedCallCueRef = nullptr;
 	mLayoutFixedAspect = false;
 	mShaderTexture = nullptr;
+	mCachedRender = false;
+	mCachedRenderNeedsRefresh = false;
 	mNeedsBatchUpdate = false;
 	mDoSpecialRotation = false;
 	mDegree = 0.0f;
@@ -269,6 +271,36 @@ void Sprite::drawClient(const ci::mat4 &trans, const DrawParams &drawParams) {
 		totalTransformation = trans * totalTransformation;
 	}
 
+	if (mCachedRender && !mCachedRenderNeedsRefresh && getFinalOutTexture()) {
+		ci::gl::pushModelMatrix();
+		ci::gl::multModelMatrix(totalTransformation);
+		ci::gl::enableAlphaBlending();
+		applyBlendingMode(mBlendMode);
+		ci::gl::GlslProgRef shaderBase = mSpriteShader.getShader();
+		if (shaderBase) {
+			DS_REPORT_GL_ERRORS();
+			shaderBase->bind();
+			DS_REPORT_GL_ERRORS();
+			shaderBase->uniform("tex0", 0);
+			shaderBase->uniform("useTexture", mUseShaderTexture);
+			shaderBase->uniform("preMultiply", premultiplyAlpha(mBlendMode));
+
+			int uniformLoc = 0;
+			if (shaderBase->findUniform("extent", &uniformLoc)) {
+				shaderBase->uniform("extent", ci::vec2(getWidth(), getHeight()));
+			}
+			if (shaderBase->findUniform("extra", &uniformLoc)) {
+				shaderBase->uniform("extra", mShaderExtraData);
+			}
+
+			mUniform.applyTo(shaderBase);
+			clip_plane::passClipPlanesToShader(shaderBase);
+		}
+		ci::gl::draw(getFinalOutTexture());
+		ci::gl::popModelMatrix();
+		return;
+	}
+
 	// Local anonymous lambda for the common aspects of drawing. Called differently below depending
 	// on the mIsRenderFinalToTexture state
 	auto renderInternal = [&](){
@@ -367,6 +399,11 @@ void Sprite::drawClient(const ci::mat4 &trans, const DrawParams &drawParams) {
 		//ci::gl::translate(0.0f, (float)-getHeight(), 0.0f);			// shift origin up to upper-left corner.
 		ci::gl::clear(ci::ColorA(0.f, 0.f, 0.f, 0.f), true);
 		renderInternal();
+
+		if(mCachedRender && mCachedRenderNeedsRefresh){
+			mCachedRenderNeedsRefresh = false;
+		}
+
 	}else{
 		renderInternal();
 	}
@@ -1681,6 +1718,16 @@ void Sprite::setupFinalRenderBuffer(){
 	} else {
 		mOutputFbo = nullptr;
 	}
+}
+
+void Sprite::setCacheTextureRender(bool cache_texture) {
+	mCachedRender = cache_texture;
+	setFinalRenderToTexture(mCachedRender);
+	mCachedRenderNeedsRefresh = true;
+}
+
+void Sprite::redrawCachedTexture() {
+	mCachedRenderNeedsRefresh = true;
 }
 
 ds::gl::Uniform& Sprite::getUniform(){

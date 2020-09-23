@@ -628,9 +628,17 @@ namespace ui {
 		///	Determines if the final render will be to the display or a texture.
 		void					setFinalRenderToTexture(bool render_to_texture, ci::gl::Fbo::Format format = ci::gl::Fbo::Format());
 		bool					isFinalRenderToTexture();
-		//Retrieve the rendered output texture
+
+		/// Retrieve the rendered output texture
 		ci::gl::TextureRef		getFinalOutTexture();
 		void					setupFinalRenderBuffer();
+
+		/// If true, will enable finalRenderToTexture as above, and also draw locally.
+		/// This also will draw *once* then just redraw from the cached texture
+		/// If you need to update the sprite drawing, call redrawCachedTexture() to draw the cache again on the next draw loop
+		void					setCacheTextureRender(bool cache_texture);
+		bool					getCacheTextureRender() {	return mCachedRender;	};
+		void					redrawCachedTexture();		
 
 		/// WARNING: ONLY shader loading is network safe. Uniforms are not synchronized.
 		void					setBaseShader(const std::string &location, const std::string &shadername, bool applyToChildren = false);
@@ -845,6 +853,9 @@ namespace ui {
 		ci::gl::FboRef			mOutputFbo;
 		ci::gl::Fbo::Format		mFboFormat;
 		bool					mIsRenderFinalToTexture;
+
+		bool					mCachedRender;
+		bool					mCachedRenderNeedsRefresh;
 
 		ci::vec4				mShaderExtraData;
 
