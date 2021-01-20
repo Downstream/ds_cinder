@@ -55,8 +55,9 @@ public:
 	void								setBoxPadding(const float touchPadding);
 
 	/// Adds a label (true / false, or whatever you set in setLabelLabels()) with the given text config
-	void								setLabelTextConfig(const std::string& textConfig);
-	void								setLabelTextConfig(const std::string& fontName, const float& fontSize, const ci::ColorA& fontColor);
+	void								setLabelTextStyle(const std::string& styleName);
+	void								setLabelTextStyle(const ds::ui::TextStyle& textConfig);
+	void								setLabelTextStyle(const std::string& fontName, const float& fontSize, const ci::ColorA& fontColor);
 
 	/// Extra distance between the check box and the label (default is 0)
 	void								setLabelPadding(const float labelPadding);
@@ -67,7 +68,6 @@ public:
 	void								setFalseLabel(const std::wstring& falseText);
 
 protected:
-	void								handleScrollTouch(ds::ui::Sprite* bs, const ds::ui::TouchInfo& ti);
 	virtual void						onSizeChanged();
 	virtual void						layout();
 	void								updateBox();

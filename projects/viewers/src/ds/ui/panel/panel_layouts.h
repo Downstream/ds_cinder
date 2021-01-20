@@ -1,7 +1,4 @@
 #pragma once
-#ifndef VIEWERS_UI_PANEL_PANEL_LAYOUTS
-#define VIEWERS_UI_PANEL_PANEL_LAYOUTS
-
 
 #include <ds/ui/panel/base_panel.h>
 
@@ -24,13 +21,14 @@ public:
 	/// \param totalArea is the area to fit the panels into
 	/// \param padding is the space between the panels in pixels
 	/// \param animationDuration is how long to take to move the panels to their destination. duration <= 0.0 will place the viewers immediately
-	static bool					binPack(std::vector<ds::ui::BasePanel*> panels, const ci::Rectf totalArea, const float padding = 5.0f, const float animationDuration = 0.35f);
+	static bool	binPack(std::vector<ds::ui::BasePanel*> panels, const ci::Rectf totalArea, const float padding = 5.0f, const float animationDuration = 0.35f);
 
-
+	// Fits the panels into rows as best as it can
+	// adjusts the height of the panels to fit into the rows
+	static bool	rowPack(std::vector<ds::ui::BasePanel*> panels, const ci::Rectf totalArea, const float padding = 5.0f, const float animationDuration = 0.35f, const int numRows = 2);
 
 };
 
 } // namespace ui
 } // namespace ds
 
-#endif

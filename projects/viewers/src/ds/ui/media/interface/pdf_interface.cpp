@@ -63,8 +63,10 @@ PDFInterface::PDFInterface(ds::ui::SpriteEngine& eng, const ci::vec2& sizey, con
 	mDownButton->getHighImage().setColor(buttonColor / 2.0f);
 	mDownButton->setScale(sizey.y / mDownButton->getHeight());
 
-	mPageCounter = mEngine.getEngineCfg().getText("viewer:widget").create(mEngine, this);
-	if(mPageCounter){
+	mPageCounter = new ds::ui::Text(mEngine);
+	if (mPageCounter) {
+		addChildPtr(mPageCounter);
+		mPageCounter->setTextStyle("viewer:widget");
 		//mPageCounter->setResizeToText(true);
 		mPageCounter->enable(false);
 	}

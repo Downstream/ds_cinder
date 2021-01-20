@@ -113,6 +113,11 @@ ds::ui::Border* ControlCheckBox::getOuterBoxSprite(){
 	return mOuterBox;
 }
 
+
+ds::ui::Text* ControlCheckBox::getLabelSprite() {
+	return mLabel;
+}
+
 void ControlCheckBox::setTouchPadding(const float touchPadding){
 	mTouchPadding = touchPadding;
 	layout();
@@ -124,25 +129,25 @@ void ControlCheckBox::setBoxPadding(const float boxPadding){
 }
 
 
-void ControlCheckBox::setLabelTextConfig(const std::string& textConfig){
-	const ds::cfg::Text& theActualConfig = mEngine.getEngineCfg().getText(textConfig);
-	if(mLabel){
-		theActualConfig.configure(*mLabel);
-	} else {
-		mLabel = theActualConfig.create(mEngine, this);
-	}
-	updateBox();
+void ControlCheckBox::setLabelTextStyle(const std::string& styleName){
+	const ds::ui::TextStyle& theStyle = mEngine.getTextStyle(styleName);
+	setLabelTextStyle(theStyle);
 }
 
-void ControlCheckBox::setLabelTextConfig(const std::string& fontName, const float& fontSize, const ci::ColorA& fontColor){
-	if(!mLabel){
+void ControlCheckBox::setLabelTextStyle(const std::string& fontName, const float& fontSize, const ci::ColorA& fontColor){
+	ds::ui::TextStyle textStyle = ds::ui::TextStyle(fontName, fontName, fontSize, 1.0f, 0.0f, fontColor);
+	setLabelTextStyle(textStyle);
+}
+
+void ControlCheckBox::setLabelTextStyle(const ds::ui::TextStyle& textConfig) {
+	if (!mLabel) {
 		mLabel = new ds::ui::Text(mEngine);
 		addChildPtr(mLabel);
 	}
-	mLabel->setFont(fontName);
-	mLabel->setFontSize(fontSize);
-	mLabel->setColorA(fontColor);
+
+	mLabel->setTextStyle(textConfig);
 	updateBox();
+
 }
 
 void ControlCheckBox::setLabelPadding(const float labelPadding){

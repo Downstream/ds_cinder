@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <settings>
-	<setting name="animation:duration" value="0.5" type="float" comment=" App-specific settings and configs. Formerlly layout.xml. Renamed to clarify that it's not a layout file for layout sprites  Standard animation duration, in seconds. "/>
-	<setting name="xml:cache" value="false" type="bool" comment=" If you cache xml, they'll load faster after the first one, but you'll have to restart the app to see any changes "/>
+
 	<setting name="circle_physics:number" value="30" type="int" min_value="1" max_value="1000"/>
-	<setting name="circle_physics:restitution" value="0.98" type="float" min_value="0.0" max_value="10.0"/>
+	<setting name="circle_physics:restitution" value="0.7" type="float" min_value="0.0" max_value="10.0"/>
 	<setting name="circle_physics:density" value="1.956938" type="float" min_value="0.0" max_value="10.0"/>
 	<setting name="circle_physics:radius_min" value="12.0" type="float" min_value="1.0" max_value="100.0"/>
 	<setting name="circle_physics:radius_max" value="50" type="float" min_value="1.0" max_value="500.0"/>
-	<setting name="circle_physics:start_velocity" value="50.0" type="float" min_value="0.0" max_value="100.0"/>
+	<setting name="circle_physics:start_velocity" value="4.0" type="float" min_value="0.0" max_value="100.0"/>
 	<setting name="circle_physics:friction" value="0.1" type="float" min_value="0.0" max_value="2.0"/>
 	<setting name="circle_physics:damping" value="1.0" type="float" min_value="0.0" max_value="10.0"/>
-	<setting name="circle_physics:fixed_rotation" value="false" type="bool"/>
+	<setting name="circle_physics:fixed_rotation" value="true" type="bool"/>
 </settings>
 

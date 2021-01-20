@@ -66,6 +66,14 @@ const int wstring_to_int(const std::wstring& str);
 const double string_to_double(const std::string& str);
 const double wstring_to_double(const std::wstring& str);
 
+template <typename T>
+std::string to_string_with_precision(const T a_value, const int n = 6) {
+	std::ostringstream out;
+	out.precision(n);
+	out << std::fixed << a_value;
+	return out.str();
+}
+
 std::vector<std::string> split( const std::string &str, const std::string &delimiters, bool dropEmpty = false );
 std::vector<std::wstring> split( const std::wstring &str, const std::wstring &delimiters, bool dropEmpty = false );
 

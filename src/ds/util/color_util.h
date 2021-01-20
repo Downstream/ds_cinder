@@ -21,10 +21,13 @@ namespace ds {
 	ci::ColorA parse_colora(const std::string& input, const ci::ColorA& defaultColor);
 
 
-
+	/** Returns a string of the format \code \#AARRGGBB from a ci::Color */
 	std::string ARGBToHex(ci::ColorA color);
+	/** Returns a string of the format \code \#AARRGGBB from a ci::Color */
 	std::string ARGBToHex(int aNum, int rNum, int gNum, int bNum);
+	/** Returns a string of the format \code \#AARRGGBB from a ci::Color */
 	std::string RGBToHex(ci::Color color);
+	/** Returns a string of the format \code \#AARRGGBB from a ci::Color */
 	std::string RGBToHex(int rNum, int gNum, int bNum);
 
 	/** Straight-up string to ci::ColorA conversion, Color format: \#AARRGGBB OR \#RRGGBB OR AARRGGBB OR RRGGBB. Example: ff0033 or \#9933ffbb */
@@ -33,7 +36,10 @@ namespace ds {
 	ci::ColorA parseColor(const std::string &color, const ds::ui::SpriteEngine& engine);
 	ci::ColorA parseColor(const std::wstring &color, const ds::ui::SpriteEngine& engine);
 
+	/** Returns a string of the format \code \#AARRGGBB from a ci::Color */
 	std::string unparseColor(const ci::ColorA& color);
+	/** Returns the name of an engine color if the color matches one, or a string of the format \code \#AARRGGBB from a ci::Color */
+	std::string unparseColor(const ci::ColorA& color, ds::ui::SpriteEngine& engine);
 
 } // namespace ds
 

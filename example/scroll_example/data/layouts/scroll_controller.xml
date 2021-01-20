@@ -1,0 +1,99 @@
+<interface>
+
+	<layout name="root_layout"
+			layout_type="vert"
+			size="$_world_size"
+		>
+		
+	
+		<sprite name="background"
+			color="#111111"
+			layout_size_mode="fill"
+			/>
+			
+		<text name="app_title"
+			font="app:title"
+			pad_all="$_ui:padding"
+			text="Scroll Example"
+			/>			
+		
+		<scroll_area name="gallery_scroll"
+					scroll_area_vert="false"
+					layout_size_mode="fixed"
+					size="2000, 200"
+					scroll_fade_colors="#FF222222, #00222222"
+					scroll_fade_size="200"
+					pad_all="#expr 1.0 * $_ui:padding"
+					scroll_shader_fade="true"
+					>					
+			<layout name="gallery"
+					layout_type="horiz"
+					height="200"
+					shrink_to_children="width"
+					layout_spacing="5">
+				<image src_cache="%APP%/data/images/temp/cat.jpg"	layout_size_mode="flex"	/>
+				<image src_cache="%APP%/data/images/temp/waffle.jpg" layout_size_mode="flex" />
+				<image src_cache="%APP%/data/images/temp/sample_image.png"	layout_size_mode="flex"	/>
+				<image src_cache="%APP%/data/images/temp/cat.jpg"	layout_size_mode="flex"	/>
+				<image src_cache="%APP%/data/images/temp/waffle.jpg" layout_size_mode="flex" />
+				<image src_cache="%APP%/data/images/temp/sample_image.png"	layout_size_mode="flex"	/>
+				<image src_cache="%APP%/data/images/temp/cat.jpg"	layout_size_mode="flex"	/>
+				<image src_cache="%APP%/data/images/temp/waffle.jpg" layout_size_mode="flex" />
+				<image src_cache="%APP%/data/images/temp/sample_image.png"	layout_size_mode="flex"	/>
+				<image src_cache="%APP%/data/images/temp/cat.jpg"	layout_size_mode="flex"	/>
+				<image src_cache="%APP%/data/images/temp/waffle.jpg" layout_size_mode="flex" />
+				<image src_cache="%APP%/data/images/temp/sample_image.png"	layout_size_mode="flex"	/>
+				<image src_cache="%APP%/data/images/temp/cat.jpg"	layout_size_mode="flex"	/>
+				<image src_cache="%APP%/data/images/temp/waffle.jpg" layout_size_mode="flex" />
+				<image src_cache="%APP%/data/images/temp/sample_image.png"	layout_size_mode="flex"	/>
+			</layout>
+					
+		</scroll_area>
+		
+		<text name="horizontal_scroller"
+			font="helper:text"
+			layout_size_mode="flex"
+			pad_all="$_ui:padding"
+			t_pad="0"
+			text="A horizontal ScrollArea"
+			/>		
+				
+				
+		<layout name="smart_scroll_list_layout"
+			layout_type="horiz"
+			size="#expr{ $_scroll_list:item_size + 50 + $_ui:padding }, 1200"
+			pad_all="$_ui:padding"
+			l_pad="400"
+			>
+			<smart_scroll_list name="smart_scroll_list"
+						scroll_list_animate="0, 0.0025"
+						scroll_fade_size="200"
+						layout_size_mode="stretch"
+						smart_scroll_item_layout="scroll_item.xml"
+						scroll_shader_fade="true"
+									/>									
+									
+			<scroll_bar name="scroll_bar"
+						layout_size_mode="flex"
+						size="50, 200"
+						sprite_link="smart_scroll_list"
+						scroll_bar_nub_color="#AAFFFFFF"
+						scroll_bar_background_color="#22FFFFFF"
+						scroll_bar_corner_radius="5"
+						/>
+		</layout>
+		
+		<text name="scroll_list_text"
+			font="helper:text"
+			layout_size_mode="flex"
+			pad_all="$_ui:padding"
+			t_pad="0"
+			l_pad="400"
+			text="A vertical SmartScrollList"
+			/>		
+	</layout>
+
+
+</interface>
+
+

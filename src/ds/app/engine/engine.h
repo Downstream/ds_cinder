@@ -1,12 +1,12 @@
 #pragma once
-#ifndef DS_APP_ENGINE_ENGINE_H_
-#define DS_APP_ENGINE_ENGINE_H_
 
 #include <memory>
 #include <unordered_map>
 
 #include <cinder/Camera.h>
 #include <cinder/gl/Fbo.h>
+#include <cinder/app/App.h>
+#include <cinder/app/TouchEvent.h>
 
 #include "ds/app/app_defs.h"
 #include "ds/app/auto_update_list.h"
@@ -16,14 +16,8 @@
 #include "ds/ui/sprite/sprite.h"
 #include "ds/params/update_params.h"
 #include "ds/params/draw_params.h"
-
-#include <cinder/app/App.h>
-#include <cinder/app/TouchEvent.h>
-
-#include "TuioClient.h"
-
 #include "ds/app/engine/engine_touch_queue.h"
-#include <ds/app/event_client.h>
+#include "ds/app/event_client.h"
 #include "ds/data/color_list.h"
 #include "ds/data/font_list.h"
 #include "ds/data/resource_list.h"
@@ -35,15 +29,23 @@
 #include "ds/ui/sprite/sprite_engine.h"
 #include "ds/ui/touch/touch_manager.h"
 #include "ds/ui/touch/touch_translator.h"
-#include "ds/ui/touch/tuio_input.h"
+
 #include "ds/ui/tween/tweenline.h"
 #include "ds/app/camera_utils.h"
+
+namespace cinder { namespace tuio {
+class Receiver;
+} }
 
 namespace ds {
 class App;
 class AutoDrawService;
 class AutoUpdate;
 class EngineRoot;
+
+namespace ui {
+class TuioInput;
+}
 
 namespace cfg {
 class SettingsEditor;
@@ -79,7 +81,7 @@ public:
 	/// I take ownership of any services added to me.
 	void								addService(const std::string&, ds::EngineService&);
 
-	/// Convenice to load a setting file into the mEngineCfg settings.
+	/// Convenience to load a setting file into the mEngineCfg settings.
 	/// \param name is the name that the system will use to refer to the settings.
 	/// \param filename is the leaf path of the settings file (i.e. "data.xml").
 	/// It will be loaded from all appropriate locations.
@@ -90,13 +92,13 @@ public:
 	/// It will be saved ONLY in the user settings location.
 	void								saveSettings(const std::string& name, const std::string& filename);
 
-	/// Convenice to append a setting file into the existing mEngineCfg settings.
+	/// Convenience to append a setting file into the existing mEngineCfg settings.
 	/// \param name is the name that the system will use to refer to the settings.
 	/// \param filename is the FULL path of the settings file (i.e. "C:\projects\settings\data.xml").
 	/// It will NOT be loaded from all appropriate locations.
 	void								appendSettings(const std::string& name, const std::string& filename);
 
-	/// Convenice to load a text cfg file into a collection of cfg objects.
+	/// Convenience to load a text cfg file into a collection of cfg objects.
 	/// \param filename is the leaf path of the settings file (i.e. "text.xml").
 	/// It will be loaded from all appropriate locations.
 	void								loadTextCfg(const std::string& filename);
@@ -148,7 +150,7 @@ public:
 	virtual void						spriteDeleted(const ds::sprite_id_t&);
 	virtual ci::Color8u					getUniqueColor();
 
-	ci::tuio::Client&					getTuioClient();
+	std::shared_ptr<ci::tuio::Receiver>	getTuioClient(const int tuioIndex=-1);
 	void								touchesBegin(const ds::ui::TouchEvent&);
 	void								touchesMoved(const ds::ui::TouchEvent&);
 	void								touchesEnded(const ds::ui::TouchEvent&);
@@ -171,9 +173,9 @@ public:
 	virtual void						injectObjectsMoved(const ds::TuioObject&);
 	virtual void						injectObjectsEnded(const ds::TuioObject&);
 
-	/// Register a TuioClient to send TUIO objects events through the Engine.  Useful if your app needs
-	/// additional TuioClient object listeners beyond the single TuioClient proveded by the Engine.
-	void								registerForTuioObjects(ci::tuio::Client&);
+	/// Register a tuio::Receiver to send TUIO objects events through the Engine.  Useful if your app needs
+	/// additional tuio::Receiver object listeners beyond the single tuio::Receiver provided by the Engine.
+	void								registerForTuioObjects(std::shared_ptr<ci::tuio::Receiver>);
 
 	/// Turns on Sprite's setRotateTouches when first created so you can enable rotated touches app-wide by default
 	/// Sprites can still turn this off after creation
@@ -208,7 +210,8 @@ public:
 	ds::ui::Sprite*						getHit(const ci::vec3& point);
 
 	ui::TouchManager&					getTouchManager(){ return mTouchManager; }
-	virtual void						clearFingers( const std::vector<int> &fingers );
+	virtual void						clearFingers(const std::vector<int> &fingers);
+	virtual void						clearFingersForSprite(ui::Sprite* theSprite) { mTouchManager.clearFingersForSprite(theSprite); }
 	void								setSpriteForFinger( const int fingerId, ui::Sprite* theSprite ){ mTouchManager.setSpriteForFinger(fingerId, theSprite); }
 	ds::ui::Sprite*						getSpriteForFinger( const int fingerId ){ return mTouchManager.getSpriteForFinger(fingerId); }
 	virtual bool						shouldDiscardTouch( ci::vec2& p ){ return mTouchManager.shouldDiscardTouch(p); }
@@ -326,15 +329,11 @@ private:
 	bool								mIdling;
 	float								mLastTouchTime;
 
-	/// The base tuio client
-	ci::tuio::Client*					mTuio;
-	uint32_t							mTuioBeganRegistrationId;
-	uint32_t							mTuioMovedRegistrationId;
-	uint32_t							mTuioEndedRegistrationId;
-	bool								mTuioRegistered;
-
+	/// Main tuio input
+	std::shared_ptr<ds::ui::TuioInput>	mTuioInput;
 	/// Additional tuio inputs if configured
-	std::vector<std::shared_ptr<ds::ui::TuioInput>> mTuioInputs;
+	std::vector<std::shared_ptr<ds::ui::TuioInput>> 
+										mTuioInputs;
 
 	/// Clients that will get update() called automatically at the start
 	/// of each update cycle
@@ -391,4 +390,3 @@ private:
 
 } // namespace ds
 
-#endif // DS_APP_ENGINE_ENGINE_H_

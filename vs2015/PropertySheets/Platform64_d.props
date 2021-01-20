@@ -8,8 +8,8 @@
       <PreprocessorDefinitions>_WIN32_WINNT=0x0602;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\include;..\src;$(CINDER_090)\include;
 	  $(CINDER_090)\boost;
-	  $(DS_PLATFORM_090)\src\osc\;
-	  $(DS_PLATFORM_090)\src\tuio\;
+	  $(CINDER_090)\blocks\TUIO\src;
+	  $(CINDER_090)\blocks\OSC\src;
 	  $(DS_PLATFORM_090)\lib\poco\include;
 	  $(DS_PLATFORM_090)\src;
 	  $(DS_PLATFORM_090)\src\gtk;
@@ -21,30 +21,30 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>
-	  $(CINDER_090)\lib;
-	  $(CINDER_090)\lib\msw\x64;
-	  $(CINDER_090)\lib\msw\x64\Debug\v140;
-	  $(DS_PLATFORM_090)\lib\poco\lib\x64;
-	  $(DS_PLATFORM_090)\lib;
-	  $(DS_PLATFORM_090)\lib\gtk\lib64;
-	  $(DS_PLATFORM_090)\lib\snappy\lib64;
-	  %(AdditionalLibraryDirectories);</AdditionalLibraryDirectories>
+          $(CINDER_090)\lib;
+          $(CINDER_090)\lib\msw\x64;
+          $(CINDER_090)\lib\msw\x64\Debug\v140;
+          $(DS_PLATFORM_090)\lib\poco\lib\x64;
+          $(DS_PLATFORM_090)\lib;
+          $(DS_PLATFORM_090)\lib\gtk\lib64;
+          $(DS_PLATFORM_090)\lib\snappy\lib64;
+          %(AdditionalLibraryDirectories);</AdditionalLibraryDirectories>
       <AdditionalDependencies>
-	  cinder.lib;
-	  glu32.lib;
-	  glib-2.0.lib;
-	  gobject-2.0.lib;
-	  PocoFoundationmtd.lib;
-	  PocoNetmtd.lib;
-	  platform64_d.lib;
-	  psapi.lib;
-	  snappy64_d.lib;
-	  cairo.lib;
-	  fontconfig.lib;
-	  pango-1.0.lib;
-	  pangocairo-1.0.lib;
-	  libcurl_a_debug.lib;
-	  %(AdditionalDependencies)</AdditionalDependencies>
+          cinder.lib;
+          glu32.lib;
+          glib-2.0.lib;
+          gobject-2.0.lib;
+          PocoFoundationmtd.lib;
+          PocoNetmtd.lib;
+          platform64_d.lib;
+          psapi.lib;
+          snappy64_d.lib;
+          cairo.lib;
+          fontconfig.lib;
+          pango-1.0.lib;
+          pangocairo-1.0.lib;
+          libcurl_a_debug.lib;
+          %(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>LIBCMT; LIBC.lib; libboost_date_time-vc120-mt-sgd-1_58.lib; libboost_regex-vc120-mt-sgd-1_58.lib; libboost_regex-vc120-mt-sgd-1_60.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <ResourceCompile>

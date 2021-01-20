@@ -639,8 +639,8 @@ void WebHandler::sendTouchEvent(const int browserId, const int touchId, const in
 		auto browserHost = findy->second->GetHost();
 		CefTouchEvent touchEvent;
 		touchEvent.id = touchId;
-		touchEvent.x = x;
-		touchEvent.y = y;
+		touchEvent.x = (float)x;
+		touchEvent.y = (float)y;
 
 		if (phase == 0) {
 			touchEvent.type = CEF_TET_PRESSED;

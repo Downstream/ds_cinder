@@ -156,36 +156,19 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\app\globals.cpp" />
     <ClCompile Include="..\src\app\physics_example_app.cpp" />
-    <ClCompile Include="..\src\model\generated\media_model.cpp" />
-    <ClCompile Include="..\src\model\generated\story_model.cpp" />
-    <ClCompile Include="..\src\query\query_handler.cpp" />
-    <ClCompile Include="..\src\query\story_query.cpp" />
     <ClCompile Include="..\src\stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\src\ui\bouncy\bouncy_view.cpp" />
-    <ClCompile Include="..\src\ui\story\story_view.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\app\globals.h" />
     <ClInclude Include="..\src\app\physics_example_app.h" />
-    <ClInclude Include="..\src\events\app_events.h" />
-    <ClInclude Include="..\src\model\all_data.h" />
-    <ClInclude Include="..\src\model\generated\media_model.h" />
-    <ClInclude Include="..\src\model\generated\story_model.h" />
-    <ClInclude Include="..\src\query\query_handler.h" />
-    <ClInclude Include="..\src\query\story_query.h" />
     <ClInclude Include="..\src\stdafx.h" />
     <ClInclude Include="..\src\ui\bouncy\bouncy_view.h" />
-    <ClInclude Include="..\src\ui\story\story_view.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resources.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\src\model\generated\model.yml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

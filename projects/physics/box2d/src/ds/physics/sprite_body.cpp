@@ -278,6 +278,10 @@ float	SpriteBody::getPhysWorldScale(){
 }
 
 
+void SpriteBody::runWorldAhead(const int iterations) {
+	mWorld.runAhead(iterations);
+}
+
 bool SpriteBody::isWorldLocked() const
 {
 	return mWorld.isLocked();

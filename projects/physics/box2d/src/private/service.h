@@ -1,6 +1,4 @@
 #pragma once
-#ifndef DS_PHYSICS_PRIVATE_SERVICE_H_
-#define DS_PHYSICS_PRIVATE_SERVICE_H_
 
 #include <unordered_map>
 #include <ds/app/engine/engine_service.h>
@@ -41,4 +39,3 @@ private:
 } // namespace physics
 } // namespace ds
 
-#endif // DS_PHYSICS_PRIVATE_SERVICE_H_

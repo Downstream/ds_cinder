@@ -324,7 +324,9 @@ Text Parameters
 	* **text_utc_format**: Output date format to convert to (default: "%H:%M:%S %d-%m-%Y")
 	* **text_utc**: The time/date string OR "now" (example: "11:42:00 14-02-2018")
 * **markdown**: Parses the string into markdown then applies it as text. markdown="Hello World, but including **markdown**"
-* **font**: The text config. Set in settings/text.xml. The text config sets the font name, size, leading and color. font="sample:config"
+* **text_style**: The text style name or settings string. Set in settings/styles.xml. The text style sets the font name, size, leading and color. text_style="sample:config". Or you can use the full style syntax of text_style="font:Arial; size:20; leading:1.2; letter_spacing:5.0; align:center; fit_sizes:12, 24, 36, 40"
+* **text_allow_markup**: Sets if the text entered should parse pango markup (e.g. <span weight='bold'>bold text</span>). Default: true
+* **font**: The text style name. Set in settings/styles.xml. The text config sets the font name, size, leading and color. font="sample:config"
 * **font_name**: The name of the font registered in the app. **Note:** It's recommended you use the font setting above (a whole config) OR font_name and font_size, and not mix the two.
 * **font_size**: Replace the original font size of Text sprites. font_size="20"
 * **font_leading**: The multiplier of font_size to use for line height (only when text consists of multiple lines)
@@ -429,18 +431,31 @@ Control Check Box Parameters
 
 Scroll List Parameters
 -------------------------------
-* **Note:** You'll need to supply the usual callbacks for this to work (for creating items in the list, setting data, etc)
+* **Note:** You'll need to supply the usual callbacks for this to work (for creating items in the list, setting data, etc) OR use smart_scroll_list
 * **scroll_list_layout**: Sets the parameters for layout from the format "x, y, z", which translates to setLayoutParams(xStart, yStart, incrementAmount, true);
 * **scroll_list_animate**: Sets the animation parameters, from the format "x, y", where x==startDelay and y==deltaDelay on ScrollList::setAnimateOnParams(startDelay, deltaDelay);
-* **scroll_area_vert**: Sets the direction parameters, where true==vertical and false==horizontal on ScrollArea::setVertical(bool); **Note: only applicable to ScrollArea, not ScrollList. To set horizontality of ScrollList, use Sprite-types of 'scroll_list_vertical' and 'scroll_list_horizontal'.**
 * **scroll_fade_colors**: **Also applicable to ScrollArea**. Set the colors of the scroll area, in the format "[colorFull], [colorTransparent]". Example: scroll_fade_colors="ff000000, 00000000" or scroll_fade_colors="44000000, 000000"
 * **scroll_fade_size**: Set the size of the fade as a float.
+* **scroll_shader_fade**: **Also applicable to ScrollArea**. Uses a shader for fading out the sides instead of putting gradients on top. NOTE: Any Children cannot use blend modes; this scroll area cannot be inside of a clipping sprite; any children with clipping cannot be rotated
+
+Scroll Area Parameters
+-------------------------------
+* **scroll_area_vert**: Sets the direction parameters, where true==vertical and false==horizontal on ScrollArea::setVertical(bool)
+* **scroll_fade_colors**: **Also applicable to ScrollList**. Set the colors of the scroll area, in the format "[colorFull], [colorTransparent]". Example: scroll_fade_colors="ff000000, 00000000" or scroll_fade_colors="44000000, 000000"
+* **scroll_fade_size**: **Also applicable to ScrollList**. Set the size of the fade as a float.
+* **scroll_shader_fade**: **Also applicable to ScrollList**. Uses a shader for fading out the sides instead of putting gradients on top. NOTE: Any Children cannot use blend modes; this scroll area cannot be inside of a clipping sprite; any children with clipping cannot be rotated
 
 Smart Scroll List Parameters
 --------------------------------------
-* **Note:** Defaults to a vertical scroll list. Use `smart_scroll_list_horizontal` for horizontal
-	layout.
+* **Note:** Defaults to a vertical scroll list. Use `smart_scroll_list_horizontal` for horizontal layout.
 * **smart_scroll_item_layout**: Sets the layout file for each list item, relative to %APP%/data/layouts/
+
+Scroll Bar Parameters
+--------------------------------------
+* **sprite_link** Add the name of a ScrollList or ScrollArea to control one of those areas
+* **scroll_bar_nub_color**: A color for the current-position indicator
+* **scroll_bar_background_color**: A color for the area in the back behind the nub
+* **scroll_bar_corner_radius**: Sets the corner radius of both the nub and the background
 
 EntryField and SoftKeyboard Parameters
 --------------------------------------
@@ -466,7 +481,9 @@ type:lowercase; key_scale:1; key_up_color:bright_grey; key_down_color:orange; ke
 * **blink_rate**: How many seconds to wait between blinks. Total blink time is animate_rate + animate_rate + blink_rate. Default: 0.5
 * **animate_rate**: How many seconds to fade the cursor on and off. Default: 0.3.
 * **text_offset**: How many pixels to offset the text sprite. Default: 0.0, 0.0
+* **search_mode**: If true, will not add returns when the enter button is hit. Default: false
 * **password_mode**: If true, will show bullets instead of text. Default: false
+* **auto_resize**: If true, sizes the resize limit of the text to the size of the EntryField sprite, otherwise the field_size is assumed to be static. Default: false
 
 **SOFT KEYBOARD PARAMETERS**
 * **type**: Determines which kind of keyboard this is. Valid types: standard, lowercase, extended, simplified, pinpad and pincode. Standard has shift abilities and some extended keys. Lowercase is simplified and only has lowercase keys. Simplified only has letters, space bar, and delete keys. Pinpad is like an ATM pin pad with an enter button. Pincode is a number entry keyboard with a back/delete button. Default: standard

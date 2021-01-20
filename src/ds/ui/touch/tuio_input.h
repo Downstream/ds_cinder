@@ -3,7 +3,16 @@
 #define _DS_UI_TOUCH_TUIO_INPUT_H_
 
 #include <ds/ui/sprite/sprite_engine.h>
-#include <tuio/TuioClient.h>
+
+namespace cinder {
+namespace osc {
+class ReceiverUdp;
+}
+namespace tuio {
+class Receiver;
+//typename Cursor2d;
+}
+}
 
 namespace ds {
 namespace ui {
@@ -19,18 +28,31 @@ public:
 			  const float rotty, const int fingerIdOffset, const ci::Rectf& allowedArea);
 	~TuioInput();
 
+	typedef std::shared_ptr<ci::osc::ReceiverUdp>
+									OscReceiverRef;
+	typedef std::shared_ptr<ci::tuio::Receiver>
+									TuioReceiverRef;
+	TuioReceiverRef					getReceiver() { return mTuioReceiver; }
+
+	void							start(const bool registerEvents=false, const int port=0);
+	void							stop();
+
 protected:
-	ci::vec2 transformEventPosition(const ci::vec2& pos, const bool doWindowScale = false);
+	ci::vec2						transformEventPosition(const ci::vec2& pos, const bool doWindowScale = false);
+	void							registerEvents();
 
 private:
-	ds::ui::TouchEvent convertTouchEvent(ci::app::TouchEvent& e, const bool isAdd);
-	ds::ui::SpriteEngine& mEngine;
-	ci::tuio::Client      mTuioClient;
+	ds::ui::SpriteEngine&			mEngine;
 
-	int       mFingerIdOffset;
-	glm::mat4 mTransform;
-	ci::Rectf mAllowedRect;
+	int								mUdpPort;
+	int								mFingerIdOffset;
+	glm::mat4						mTransform;
+	ci::Rectf						mAllowedRect;
+
+	OscReceiverRef					mOscReceiver;
+	TuioReceiverRef					mTuioReceiver;
 };
+
 
 } // ! namespace ui
 }  // !namespace ds

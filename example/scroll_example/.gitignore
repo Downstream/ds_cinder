@@ -1,0 +1,54 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Visual studio files
+*.sdf
+*.opensdf
+*.suo
+*.map
+*.ipch
+*.db
+*.opendb
+*.msi
+*.cab
+
+GPUCache/
+Release/
+
+/vs2015/.fontconfig
+/vs2015/x64/
+/vs2015/Debug/
+/vs2015/File System/
+/vs2015/databases/
+/vs2015/QuotaManager
+/vs2015/QuotaManager-journal
+/settings/configuration.xml
+/inspector.pak
+/install/DSNode
+/install/DsAppHost

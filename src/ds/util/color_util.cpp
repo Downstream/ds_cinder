@@ -77,11 +77,17 @@ ci::ColorA parse_colora(const std::string& input, const ci::ColorA& dv) {
 
 
 std::string unparseColor(const ci::ColorA& color){
-	// TODO: look up engine colors
 	return ARGBToHex(color);
 }
 
+std::string unparseColor(const ci::ColorA& color, ui::SpriteEngine& engine) {
+	auto engineColor = engine.getColors().getNameFromColor(color);
+	if(engineColor.empty()){
+		return unparseColor(color);
+	}
 
+	return engineColor;	
+}
 
 std::string ARGBToHex(ci::ColorA theColor){
 	return ARGBToHex((int)(theColor.a * 255.0f), (int)(theColor.r * 255.0f), (int)(theColor.g * 255.0f), (int)(theColor.b * 255.0f));

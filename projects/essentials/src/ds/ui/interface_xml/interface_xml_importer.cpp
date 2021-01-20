@@ -9,7 +9,6 @@
 #include <ds/app/environment.h>
 #include <ds/app/event.h>
 #include <ds/app/event_registry.h>
-#include <ds/cfg/cfg_text.h>
 #include <ds/cfg/settings.h>
 #include <ds/cfg/settings_variables.h>
 #include <ds/debug/logger.h>
@@ -163,14 +162,10 @@ void XmlImporter::getSpriteProperties(ds::ui::Sprite& sp, ci::XmlTree& xml) {
 	ds::ui::Text* txt = dynamic_cast<ds::ui::Text*>(&sp);
 	if (txt) {
 		if (!txt->getText().empty()) xml.setAttribute("text", txt->getTextAsString());
-		if (txt->getConfigName().empty()) {
-			xml.setAttribute("font_name", txt->getFontFileName());
-			xml.setAttribute("font_size", txt->getFontSize());
+		if (txt->getTextStyle().mName.empty()) {
+			xml.setAttribute("text_style", txt->getTextStyle().mName);
 		} else {
-			xml.setAttribute("font", txt->getConfigName());
-		}
-
-		if (txt->getConfigName().empty()) {
+			xml.setAttribute("font", txt->getTextStyle().mFont);
 			xml.setAttribute("font_leading", txt->getLeading());
 		}
 
@@ -527,13 +522,11 @@ void XmlImporter::setSpriteProperty(ds::ui::Sprite& sprite, const std::string& p
 		propertyMap["font"] = [](SprProps& p) {
 			auto text = dynamic_cast<Text*>(&p.sprite);
 			if (text) {
-				auto cfg = text->getEngine().getEngineCfg().getText(p.value);
-				cfg.configure(*text);
+				text->setTextStyle(text->getEngine().getTextStyle(p.value));
 			} else {
 				auto controlBox = dynamic_cast<ControlCheckBox*>(&p.sprite);
 				if (controlBox) {
-					controlBox->setLabelTextConfig(p.value);
-				} else {
+					controlBox->setLabelTextStyle(p.value);
 					logAttributionWarning(p);
 				}
 			}
@@ -541,11 +534,30 @@ void XmlImporter::setSpriteProperty(ds::ui::Sprite& sprite, const std::string& p
 		propertyMap["font_name"] = [](SprProps& p) {
 			auto text = dynamic_cast<Text*>(&p.sprite);
 			if (text) {
-				text->setFont(p.value, text->getFontSize());
+				text->setFont(p.value);
 			} else {
 				logAttributionWarning(p);
 			}
-
+		};
+		propertyMap["text_style"] = [](SprProps& p) {
+			// Try to set the font
+			auto text = dynamic_cast<Text*>(&p.sprite);
+			if (text) {
+				if (p.engine.getEngineCfg().hasTextStyle(p.value)) {
+					text->setTextStyle(p.value);
+				} else {
+					text->setTextStyle(TextStyle::textStyleFromSetting(p.engine, p.value));
+				}
+			} else {
+				auto controlBox = dynamic_cast<ControlCheckBox*>(&p.sprite);
+				if (controlBox) {
+					if (p.engine.getEngineCfg().hasTextStyle(p.value)) {
+						controlBox->setLabelTextStyle(p.value);
+					} else {
+						controlBox->setLabelTextStyle(TextStyle::textStyleFromSetting(p.engine, p.value));
+					}
+				}
+			}
 		};
 		propertyMap["resize_limit"] = [](SprProps& p) {
 			auto text = dynamic_cast<Text*>(&p.sprite);
@@ -769,6 +781,14 @@ void XmlImporter::setSpriteProperty(ds::ui::Sprite& sprite, const std::string& p
 				}
 
 				text->setWrapMode(theMode);
+			} else {
+				logAttributionWarning(p);
+			}
+		};
+		propertyMap["text_allow_markup"] = [](SprProps& p) {
+			auto text = dynamic_cast<Text*>(&p.sprite);
+			if (text) {
+				text->setAllowMarkup(parseBoolean(p.value));
 			} else {
 				logAttributionWarning(p);
 			}
@@ -1085,10 +1105,54 @@ void XmlImporter::setSpriteProperty(ds::ui::Sprite& sprite, const std::string& p
 				logAttributionWarning(p);
 			}
 		};
+		propertyMap["scroll_shader_fade"] = [](SprProps& p) {
+			auto				scrollList = dynamic_cast<ds::ui::ScrollList*>(&p.sprite);
+			ds::ui::ScrollArea* scrollArea = nullptr;
+			if (scrollList) {
+				scrollArea = scrollList->getScrollArea();
+			}
+
+			if (!scrollArea) {
+				scrollArea = dynamic_cast<ds::ui::ScrollArea*>(&p.sprite);
+			}
+
+			if (scrollArea) {
+				auto fadesy = parseBoolean(p.value);
+				scrollArea->setUseShaderFade(fadesy);
+			} else {
+				logAttributionWarning(p);
+			}
+		};
 		propertyMap["smart_scroll_item_layout"] = [](SprProps& p) {
 			auto smartScrollList = dynamic_cast<ds::ui::SmartScrollList*>(&p.sprite);
 			if (smartScrollList) {
 				smartScrollList->setItemLayoutFile(p.value);
+			} else {
+				logAttributionWarning(p);
+			}
+		};
+
+		propertyMap["scroll_bar_nub_color"] = [](SprProps& p) {
+			auto scrollBar = dynamic_cast<ScrollBar*>(&p.sprite);
+			if (scrollBar && scrollBar->getNubSprite()) {
+				scrollBar->getNubSprite()->setColorA(parseColor(p.value, p.engine));
+			} else {
+				logAttributionWarning(p);
+			}
+		};
+		propertyMap["scroll_bar_background_color"] = [](SprProps& p) {
+			auto scrollBar = dynamic_cast<ScrollBar*>(&p.sprite);
+			if (scrollBar && scrollBar->getBackgroundSprite()) {
+				scrollBar->getBackgroundSprite()->setColorA(parseColor(p.value, p.engine));
+			} else {
+				logAttributionWarning(p);
+			}
+		};
+		propertyMap["scroll_bar_corner_radius"] = [](SprProps& p) {
+			auto scrollBar = dynamic_cast<ScrollBar*>(&p.sprite);
+			if (scrollBar && scrollBar->getBackgroundSprite() && scrollBar->getNubSprite()) {
+				scrollBar->getBackgroundSprite()->setCornerRadius(ds::string_to_float(p.value));
+				scrollBar->getNubSprite()->setCornerRadius(ds::string_to_float(p.value));
 			} else {
 				logAttributionWarning(p);
 			}
@@ -1590,6 +1654,17 @@ bool XmlImporter::load(ci::XmlTree& xml, const bool mergeFirstChild, ds::cfg::Se
 							ef->keyPressed(character, keyType);
 						}
 					});
+				} else {
+					ScrollBar* sb = dynamic_cast<ScrollBar*>(it.first);
+					ScrollList* sl = dynamic_cast<ScrollList*>(findy->second);
+					ScrollArea* sa = dynamic_cast<ScrollArea*>(findy->second);
+					if(sb && sl){
+						sb->linkScrollList(sl);
+					}
+
+					if(sb && sa){
+						sb->linkScrollArea(sa);
+					}
 				}
 			}
 		}
@@ -1893,6 +1968,10 @@ ds::ui::Sprite* XmlImporter::createSpriteByType(ds::ui::SpriteEngine& engine, co
 					efs.mPasswordMode = parseBoolean(paramValue);
 				} else if (paramType == "text_offset") {
 					efs.mTextOffset = ci::vec2(parseVector(paramValue));
+				} else if (paramType == "search_mode") {
+					efs.mSearchMode = parseBoolean(paramValue);
+				} else if (paramType == "auto_resize") {
+					efs.mAutoResize = parseBoolean(paramValue);
 				}
 			}
 		}

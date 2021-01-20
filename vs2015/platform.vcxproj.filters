@@ -79,15 +79,6 @@
     <Filter Include="src\ds\ui\touch">
       <UniqueIdentifier>{6fa6067f-0336-4e7d-8406-1da97416e95d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\osc\osc">
-      <UniqueIdentifier>{8d7b7f8c-0bb8-4d92-a9da-0864cb3d60b7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\osc\ip">
-      <UniqueIdentifier>{0253483d-3435-4cd5-87aa-09af4f9844a8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\osc\ip\win32">
-      <UniqueIdentifier>{0d7b5432-3ad6-4e19-89dd-71086b05587c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\ds\ui\layout">
       <UniqueIdentifier>{ec8f7e90-a386-4b14-9c1b-dddd49bd09fe}</UniqueIdentifier>
     </Filter>
@@ -360,9 +351,6 @@
     <ClInclude Include="..\src\ds\cfg\settings.h">
       <Filter>src\ds\cfg</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\ds\cfg\cfg_text.h">
-      <Filter>src\ds\cfg</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\ds\network\tcp_socket_sender.h">
       <Filter>src\ds\network</Filter>
     </ClInclude>
@@ -509,72 +497,6 @@
     </ClInclude>
     <ClInclude Include="..\src\stdafx.h">
       <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\osc\OscBundle.h">
-      <Filter>src\osc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\osc\OscListener.h">
-      <Filter>src\osc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\osc\OscMessage.h">
-      <Filter>src\osc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\osc\OscSender.h">
-      <Filter>src\osc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\osc\OscArg.h">
-      <Filter>src\osc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\osc\osc\OscException.h">
-      <Filter>src\osc\osc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\osc\osc\OscHostEndianness.h">
-      <Filter>src\osc\osc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\osc\osc\OscOutboundPacketStream.h">
-      <Filter>src\osc\osc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\osc\osc\OscPacketListener.h">
-      <Filter>src\osc\osc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\osc\osc\OscPrintReceivedElements.h">
-      <Filter>src\osc\osc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\osc\osc\OscReceivedElements.h">
-      <Filter>src\osc\osc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\osc\osc\OscTypes.h">
-      <Filter>src\osc\osc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\osc\osc\MessageMappingOscPacketListener.h">
-      <Filter>src\osc\osc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\osc\ip\IpEndpointName.h">
-      <Filter>src\osc\ip</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\osc\ip\NetworkingUtils.h">
-      <Filter>src\osc\ip</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\osc\ip\PacketListener.h">
-      <Filter>src\osc\ip</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\osc\ip\TimerListener.h">
-      <Filter>src\osc\ip</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\osc\ip\UdpSocket.h">
-      <Filter>src\osc\ip</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\tuio\TuioClient.h">
-      <Filter>src\tuio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\tuio\TuioCursor.h">
-      <Filter>src\tuio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\tuio\TuioObject.h">
-      <Filter>src\tuio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\tuio\TuioProfileBase.h">
-      <Filter>src\tuio</Filter>
     </ClInclude>
     <ClInclude Include="..\src\ds\util\date_util.h">
       <Filter>src\ds\util</Filter>
@@ -732,6 +654,12 @@
     <ClInclude Include="..\src\ds\math\extrasrc\fptypes.hh">
       <Filter>src\ds\math\extrasrc</Filter>
     </ClInclude>
+    <ClInclude Include="$(CINDER_090)\blocks\TUIO\src\cinder\tuio\Tuio.h">
+      <Filter>src\tuio</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CINDER_090)\blocks\OSC\src\cinder\osc\Osc.h">
+      <Filter>src\osc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\ds\data\resource.cpp">
@@ -769,9 +697,6 @@
     </ClCompile>
     <ClCompile Include="..\src\ds\util\string_util.cpp">
       <Filter>src\ds\util</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\ds\params\draw_params.cpp">
-      <Filter>src\ds\params</Filter>
     </ClCompile>
     <ClCompile Include="..\src\ds\params\update_params.cpp">
       <Filter>src\ds\params</Filter>
@@ -920,9 +845,6 @@
     <ClCompile Include="..\src\ds\cfg\settings.cpp">
       <Filter>src\ds\cfg</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\ds\cfg\cfg_text.cpp">
-      <Filter>src\ds\cfg</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\ds\network\tcp_socket_sender.cpp">
       <Filter>src\ds\network</Filter>
     </ClCompile>
@@ -1052,42 +974,6 @@
     <ClCompile Include="..\src\stdafx.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\osc\OscListener.cpp">
-      <Filter>src\osc</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\osc\OscMessage.cpp">
-      <Filter>src\osc</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\osc\OscSender.cpp">
-      <Filter>src\osc</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\osc\OscBundle.cpp">
-      <Filter>src\osc</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\osc\osc\OscOutboundPacketStream.cpp">
-      <Filter>src\osc\osc</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\osc\osc\OscPrintReceivedElements.cpp">
-      <Filter>src\osc\osc</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\osc\osc\OscReceivedElements.cpp">
-      <Filter>src\osc\osc</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\osc\osc\OscTypes.cpp">
-      <Filter>src\osc\osc</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\osc\ip\IpEndpointName.cpp">
-      <Filter>src\osc\ip</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\osc\ip\win32\NetworkingUtils.cpp">
-      <Filter>src\osc\ip\win32</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\osc\ip\win32\UdpSocket.cpp">
-      <Filter>src\osc\ip\win32</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tuio\TuioClient.cpp">
-      <Filter>src\tuio</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\ds\util\date_util.cpp">
       <Filter>src\ds\util</Filter>
     </ClCompile>
@@ -1201,6 +1087,12 @@
     </ClCompile>
     <ClCompile Include="..\src\ds\math\fparser.cc">
       <Filter>src\ds\math</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CINDER_090)\blocks\TUIO\src\cinder\tuio\Tuio.cpp">
+      <Filter>src\tuio</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CINDER_090)\blocks\OSC\src\cinder\osc\Osc.cpp">
+      <Filter>src\osc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

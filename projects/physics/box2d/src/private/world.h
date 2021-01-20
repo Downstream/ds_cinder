@@ -68,6 +68,8 @@ public:
 
 	bool							isLocked() const;
 
+	void							runAhead(const int iterations);
+
 protected:
 	virtual void					update(const ds::UpdateParams&);
 

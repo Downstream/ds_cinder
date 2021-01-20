@@ -54,7 +54,7 @@ void EditorItem::setSetting(Settings::Setting* theSetting){
 	mHasOriginalValue = !theSetting->mOriginalValue.empty();
 	if(mHasOriginalValue)
 	{
-		DS_LOG_INFO("HAS ORIGINAL VALUE");
+	//	DS_LOG_INFO("HAS ORIGINAL VALUE");
 	}
 	if(theSetting->mType == ds::cfg::SETTING_TYPE_SECTION_HEADER){
 		mSettingName->setFontSize(16.0f);

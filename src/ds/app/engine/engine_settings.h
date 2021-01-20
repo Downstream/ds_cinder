@@ -40,6 +40,10 @@ public:
 
 	void							printStartupInfo();
 	bool							getUsingDefault() const { return !mLoadedAnySettings; };
+
+	/// anything set here during runtime will override any startup arguments or configuration.xml settings
+	/// note that this does not have an immediate effect - an app soft restart is required
+	static void						setConfigurationOverride(std::string overrideFolder);
 	static const std::string&		getConfigurationFolder();
 	static const std::string&		envProjectPath();
 	void							loadInitialSettings();

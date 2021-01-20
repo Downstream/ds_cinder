@@ -194,7 +194,7 @@ public:
 							this_link.mUrl = this_link.mRawUri;
 						}
 
-						std::cout << "Found link in page: " << this_link.mPageDest << " " << this_link.mRawUri << " " << this_link.mRect << " " << this_link.mUrl << std::endl;
+						//std::cout << "Found link in page: " << this_link.mPageDest << " " << this_link.mRawUri << " " << this_link.mRect << " " << this_link.mUrl << std::endl;
 
 						mLinks.emplace_back(this_link);
 

@@ -22,6 +22,7 @@ EntryField::EntryField(ds::ui::SpriteEngine& engine, EntryFieldSettings& setting
 	, mCursorIndex(0)
 {
 	mTextSprite = new ds::ui::Text(engine);
+	mTextSprite->setAllowMarkup(false);
 	addChildPtr(mTextSprite);
 
 	mCursor = new ds::ui::Sprite(engine);
@@ -47,13 +48,13 @@ EntryField::~EntryField() {
 void EntryField::setEntryFieldSettings(EntryFieldSettings& newSettings) {
 	mEntryFieldSettings = newSettings;
 
-	setSize(mEntryFieldSettings.mFieldSize.x, mEntryFieldSettings.mFieldSize.y);
-
 	if(mTextSprite) {
 		mTextSprite->setResizeLimit(mEntryFieldSettings.mFieldSize.x, mEntryFieldSettings.mFieldSize.y);
-		mEngine.getEngineCfg().getText(newSettings.mTextConfig).configure(*mTextSprite);
+		mTextSprite->setTextStyle(newSettings.mTextConfig);
 		mTextSprite->setPosition(mEntryFieldSettings.mTextOffset);
 	}
+
+	setSize(mEntryFieldSettings.mFieldSize.x, mEntryFieldSettings.mFieldSize.y);
 
 	if(mCursor) {
 		mCursor->setColor(newSettings.mCursorColor);
@@ -69,8 +70,8 @@ ds::ui::EntryFieldSettings EntryField::getEntryFieldSettings() {
 }
 
 void EntryField::onSizeChanged() {
-	if(mTextSprite) {
-		//mTextSprite->setResizeLimit(getWidth(), getHeight());
+	if(mTextSprite && mEntryFieldSettings.mAutoResize) {
+		mTextSprite->setResizeLimit(getWidth(), getHeight());
 	}
 }
 

@@ -68,17 +68,22 @@ MenuItem::MenuItem(ds::ui::SpriteEngine& enginey, const ds::ui::TouchMenu::MenuI
 	}
 
 	if(!mMenuConfig.mItemTitleTextConfig.empty()){
-		mTitle = mEngine.getEngineCfg().getText(mMenuConfig.mItemTitleTextConfig).create(mEngine, this);
+		mTitle = new ds::ui::Text(mEngine);
+		addChildPtr(mTitle);
+		mTitle->setTextStyle(mMenuConfig.mItemTitleTextConfig);
 	}
 
-	if(!mMenuConfig.mItemSubtitleTextConfig.empty()){
-		mSubtitle = mEngine.getEngineCfg().getText(mMenuConfig.mItemSubtitleTextConfig).create(mEngine, this);
+	if (!mMenuConfig.mItemSubtitleTextConfig.empty()) {
+		mSubtitle = new ds::ui::Text(mEngine);
+		addChildPtr(mSubtitle);
+		mSubtitle->setTextStyle(mMenuConfig.mItemSubtitleTextConfig);
 	}
 
 	float titlePositiony = thisSize.y * titleYPercent;
 	float subtitlePositiony = titlePositiony;
 	if(mTitle){
 		mTitle->setText(mMenuItemModel.mTitle);
+		mTitle->setResizeLimit(mMenuConfig.mItemTitleResizeLimit.x, mMenuConfig.mItemTitleResizeLimit.y);
 		ci::vec2 titleSize = ci::vec2(mTitle->getWidth(), mTitle->getHeight());
 		mTitle->setPosition(thisSize.x * 0.5f - titleSize.x * 0.5f, titlePositiony);
 		mTitle->setOpacity(mMenuConfig.mItemTitleOpacity);
@@ -88,6 +93,7 @@ MenuItem::MenuItem(ds::ui::SpriteEngine& enginey, const ds::ui::TouchMenu::MenuI
 
 	if(mSubtitle){
 		mSubtitle->setText(mMenuItemModel.mSubtitle);
+		mSubtitle->setResizeLimit(mMenuConfig.mItemTitleResizeLimit.x, mMenuConfig.mItemTitleResizeLimit.y);
 		ci::vec2 titleSize = ci::vec2(mSubtitle->getWidth(), mSubtitle->getHeight());
 		mSubtitle->setPosition(thisSize.x * 0.5f - titleSize.x * 0.5f, subtitlePositiony);
 		mSubtitle->setOpacity(mMenuConfig.mItemSubtitleOpacity);

@@ -120,7 +120,8 @@ void EngineStatsView::updateStats() {
 		const float pad = 30.0f;
 	
 		mText = new ds::ui::Text(mEngine);
-		mText->setFont("Arial", 14.0f);
+		mText->setFont("Arial");
+		mText->setFontSize(14.0f);
 		mText->setPosition(pad, pad);
 		mText->setResizeLimit(mBackground->getWidth() - pad * 2.0f);
 		mText->setLeading(1.2f);

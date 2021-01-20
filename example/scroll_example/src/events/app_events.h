@@ -1,22 +1,10 @@
-#ifndef _SCROLLEXAMPLE_APP_APPEVENTS_H_
-#define _SCROLLEXAMPLE_APP_APPEVENTS_H_
+#pragma once
 
 #include <ds/app/event.h>
 
-namespace example {
+namespace downstream {
 
-class IdleStartedEvent : public ds::RegisteredEvent < IdleStartedEvent > {
-public:
-	IdleStartedEvent(){};
-};
+class SomethingHappenedEvent : public ds::RegisteredEvent<SomethingHappenedEvent>{};
 
-class IdleEndedEvent : public ds::RegisteredEvent < IdleEndedEvent > {
-public:
-	IdleEndedEvent(){};
-
-};
-
-} // !namespace example
-
-#endif // !_SCROLLEXAMPLE_APP_APPEVENTS_H_
+} // !namespace downstream
 

@@ -251,11 +251,11 @@ void SoftKeyboardButton::doLayout(){
 	if(mText){
 		if(mPressed){
 			if(!mTextConfigDown.empty()){
-				mEngine.getEngineCfg().getText(mTextConfigDown).configure(*mText);
+				mText->setTextStyle(mEngine.getTextStyle(mTextConfigDown));
 			}
 		} else {
-			if(!mTextConfigUp.empty()){
-				mEngine.getEngineCfg().getText(mTextConfigUp).configure(*mText);
+			if (!mTextConfigUp.empty()) {
+				mText->setTextStyle(mEngine.getTextStyle(mTextConfigUp));
 			}
 		}
 

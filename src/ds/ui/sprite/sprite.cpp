@@ -203,6 +203,8 @@ Sprite::~Sprite() {
 	animStop();
 	cancelDelayedCall();
 
+	mEngine.clearFingersForSprite(this);
+
 	mEngine.removeFromDragDestinationList(this);
 
 	// We only want to request a delete for the sprite at the head of a tree,
@@ -331,7 +333,7 @@ void Sprite::drawClient(const ci::mat4 &trans, const DrawParams &drawParams) {
 
 
 		if (!mIsRenderFinalToTexture && (mSpriteFlags&CLIP_F) != 0){ // Clipping is implicit when rendering to an FBO, only set clipping if we aren't
-			const ci::Rectf&	  clippingBounds = getClippingBounds();
+			const ci::Rectf&	  clippingBounds = getClippingBounds(drawParams.mClippingParent);
 			clip_plane::enableClipping(clippingBounds.getX1(), clippingBounds.getY1(), clippingBounds.getX2(), clippingBounds.getY2());
 		}
 
@@ -1732,54 +1734,101 @@ bool Sprite::getClipping() const {
 	return getFlag(CLIP_F, mSpriteFlags);
 }
 
-const ci::Rectf& Sprite::getClippingBounds(){
+const ci::Rectf& Sprite::getClippingBounds(ds::ui::Sprite* clippingParent){
 	if(mClippingBoundsDirty) {
 		mClippingBoundsDirty = false;
-		computeClippingBounds();
+		computeClippingBounds(clippingParent);
 	}
 	return mClippingBounds;
 }
 
-void Sprite::computeClippingBounds(){
+void Sprite::computeClippingBounds(ds::ui::Sprite* clippingParent){
 	if(getClipping()) {
-		ci::vec3 tl = localToGlobal(ci::vec3(0.0f, 0.0f, 0.0f));
-		ci::vec3 br = localToGlobal(ci::vec3(getWidth(), getHeight(), 0.0f));
-		ci::Rectf clippingRect(tl.x, tl.y, br.x, br.y);
+		/// if there's a "top" sprite that we're calculating based off of, use that as 0,0 for position calculations
+		/// this is intended for drawing clipped sprites into fbo's
+		if (clippingParent) {
+			auto parentGlobalPos = clippingParent->getGlobalPosition();
+			ci::vec3 tl = localToGlobal(ci::vec3(0.0f, 0.0f, 0.0f)) - parentGlobalPos;
+			ci::vec3 br = localToGlobal(ci::vec3(getWidth(), getHeight(), 0.0f)) - parentGlobalPos;
+			ci::Rectf clippingRect(tl.x, tl.y, br.x, br.y);
 
-		// first find the outermost clipped window and use it as our reference
-		Sprite *outerClippedSprite = nullptr;
-		Sprite *curSprite = this;
-		while(curSprite) {
-			if(curSprite->getClipping())
-				outerClippedSprite = curSprite;
-			curSprite = curSprite->mParent;
-		}
+			// first find the outermost clipped window and use it as our reference
+			Sprite *outerClippedSprite = nullptr;
+			Sprite *curSprite = this;
+			while (curSprite) {
+				if (curSprite->getClipping())
+					outerClippedSprite = curSprite;
+				curSprite = curSprite->mParent;
+				if (curSprite == clippingParent) break;
+			}
 
-		if(outerClippedSprite) {
-			curSprite = mParent;
-			while(curSprite) {
-				if(curSprite->getClipping()) {
-					float ww = curSprite->getWidth();
-					float wh = curSprite->getHeight();
-					ci::vec3 tl = curSprite->localToGlobal(ci::vec3(0.0f, 0.0f, 0.0f));
-					ci::vec3 br = curSprite->localToGlobal(ci::vec3(ww, wh, 0.0f));
-					ci::Rectf outerRect(tl.x, tl.y, br.x, br.y);
-					clippingRect.clipBy(outerRect);
+			if (outerClippedSprite) {
+				curSprite = mParent;
+				while (curSprite) {
+					if (curSprite->getClipping()) {
+						float ww = curSprite->getWidth();
+						float wh = curSprite->getHeight();
+						ci::vec3 tl = curSprite->localToGlobal(ci::vec3(0.0f, 0.0f, 0.0f)) - parentGlobalPos;
+						ci::vec3 br = curSprite->localToGlobal(ci::vec3(ww, wh, 0.0f)) - parentGlobalPos;
+						ci::Rectf outerRect(tl.x, tl.y, br.x, br.y);
+						clippingRect.clipBy(outerRect);
+					}
+					curSprite = curSprite->mParent;
 				}
+			}
+
+			if (clippingRect.x1 == clippingRect.x2) clippingRect.x2 += 1.0f;
+			if (clippingRect.y1 == clippingRect.y2) clippingRect.y2 += 1.0f;
+
+			if (!math::isEqual(clippingRect.x1, mClippingBounds.x1)
+				|| !math::isEqual(clippingRect.x2, mClippingBounds.x2)
+				|| !math::isEqual(clippingRect.y1, mClippingBounds.y1)
+				|| !math::isEqual(clippingRect.y2, mClippingBounds.y2)) {
+				mClippingBounds = clippingRect;
+				markAsDirty(CLIPPING_BOUNDS);
+			}
+
+		/// the 'traditional' recipe for calculating clip planes based on global positions
+		} else {
+
+			ci::vec3 tl = localToGlobal(ci::vec3(0.0f, 0.0f, 0.0f));
+			ci::vec3 br = localToGlobal(ci::vec3(getWidth(), getHeight(), 0.0f));
+			ci::Rectf clippingRect(tl.x, tl.y, br.x, br.y);
+
+			// first find the outermost clipped window and use it as our reference
+			Sprite *outerClippedSprite = nullptr;
+			Sprite *curSprite = this;
+			while (curSprite) {
+				if (curSprite->getClipping())
+					outerClippedSprite = curSprite;
 				curSprite = curSprite->mParent;
 			}
-		}
 
-		if (clippingRect.x1 == clippingRect.x2) clippingRect.x2 += 1.0f;
-		if (clippingRect.y1 == clippingRect.y2) clippingRect.y2 += 1.0f;
+			if (outerClippedSprite) {
+				curSprite = mParent;
+				while (curSprite) {
+					if (curSprite->getClipping()) {
+						float ww = curSprite->getWidth();
+						float wh = curSprite->getHeight();
+						ci::vec3 tl = curSprite->localToGlobal(ci::vec3(0.0f, 0.0f, 0.0f));
+						ci::vec3 br = curSprite->localToGlobal(ci::vec3(ww, wh, 0.0f));
+						ci::Rectf outerRect(tl.x, tl.y, br.x, br.y);
+						clippingRect.clipBy(outerRect);
+					}
+					curSprite = curSprite->mParent;
+				}
+			}
 
-		if(    !math::isEqual(clippingRect.x1, mClippingBounds.x1)
-			|| !math::isEqual(clippingRect.x2, mClippingBounds.x2)
-			|| !math::isEqual(clippingRect.y1, mClippingBounds.y1)
-			|| !math::isEqual(clippingRect.y2, mClippingBounds.y2) )
-		{
-			mClippingBounds = clippingRect;
-			markAsDirty(CLIPPING_BOUNDS);
+			if (clippingRect.x1 == clippingRect.x2) clippingRect.x2 += 1.0f;
+			if (clippingRect.y1 == clippingRect.y2) clippingRect.y2 += 1.0f;
+
+			if (!math::isEqual(clippingRect.x1, mClippingBounds.x1)
+				|| !math::isEqual(clippingRect.x2, mClippingBounds.x2)
+				|| !math::isEqual(clippingRect.y1, mClippingBounds.y1)
+				|| !math::isEqual(clippingRect.y2, mClippingBounds.y2)) {
+				mClippingBounds = clippingRect;
+				markAsDirty(CLIPPING_BOUNDS);
+			}
 		}
 	}
 }

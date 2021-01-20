@@ -28,6 +28,7 @@ public:
 		, mTextOffset(0.0f, 0.0f)
 		, mPasswordMode(false)
 		, mSearchMode(false)
+		, mAutoResize(false)
 	{}
 
 	std::string mTextConfig;
@@ -38,6 +39,7 @@ public:
 	ci::vec2	mCursorOffset; 
 	bool		mPasswordMode; // characters show as stars
 	bool		mSearchMode; // enter key sends a text updated callback but doesn't insert text
+	bool		mAutoResize; // if the entry field resizes, sets the size of the TextSprite resize limits as well, default off
 	float		mBlinkRate;
 	float		mAnimationRate;
 };

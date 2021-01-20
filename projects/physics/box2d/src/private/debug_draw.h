@@ -18,6 +18,7 @@ class DebugDraw : public b2Draw
 				, public ds::AutoDraw {
 public:
 	DebugDraw(ds::ui::SpriteEngine&, b2World&, ds::physics::World &);
+	~DebugDraw();
 
 	virtual void		DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color);
 	virtual void		DrawSolidPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color);

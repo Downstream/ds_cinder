@@ -1,33 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <settings>
-	<setting name="create_root_world" value="true" type="bool" comment=" Example physcs.xml file.
-		The physics project will automatically try to load this file on initialization.
-	 If true, then a default physics world with an ID of 0 is created on the
-		root sprite object. If you set this to false, that means the app is
-		responsible for creating its own physics world(s) on the desired sprite(s). "/>
+	<setting name="create_root_world" value="true" type="bool"/>
 	<setting name="use_local_translation" value="true" type="bool" comment=" translate input/output from box2d into local sprite coordinate space. default=false "/>
 	<setting name="friction" value="0.9" type="float" comment=" Default values when creating bodies. Can be overriden per SpriteBody. "/>
 	<setting name="dampening:linear" value="5" type="float"/>
 	<setting name="dampening:angular" value="5" type="float"/>
 	<setting name="rotation:fixed" value="false" type="bool"/>
-	<setting name="step:velocity_iterations" value="6" type="int" comment=" Step controls how box 2d handles integrations for each frame of physics.
-			higher numbers of iterations are slower, but more accurate. "/>
-	<setting name="step:position_iterations" value="2" type="int"/>
-	<setting name="step:fixed" value="true" type="bool" comment=" Box 2d recommends fixing the update to a set amount, regardless of framerate, 
-	but the legacy behaviour is variable (delta time). 
-	If you specify fixed, you should also specify the amount, which should be 1 / &lt;frame_rate&gt; "/>
-	<setting name="step:fixed_amount" value="0.008" type="float"/>
+	<setting name="step:velocity_iterations" value="10" type="int" comment="higher numbers of iterations are slower, but more accurate. "/>
+	<setting name="step:position_iterations" value="4" type="int"/>
+	<setting name="step:fixed" value="true" type="bool" comment=" Box 2d recommends fixing the update to a set amount, regardless of framerate, but the legacy behaviour is variable (delta time). If you specify fixed, you should also specify the amount, which should be 1 / frame_rate "/>
+	<setting name="step:fixed_amount" value="0.016" type="float"/>
 	<setting name="step:fixed_amount" value="0.01666666666" type="float"/>
-	<setting name="mouse:max_force" value="5000" type="float" comment=" settings for all mouse joints
-			max_force: maximum amount of strongness
-			dampening: Damping is used to reduce the world velocity of bodies. Values go from 0.0 to infinity, with 0 being off, and infinity being full dampening
-			frequency: how many times to apply a second. higher numbers means much stronger pull--"/>
+	<setting name="mouse:max_force" value="5000" type="float" />
 	<setting name="mouse:dampening" value="0.0" type="float"/>
 	<setting name="mouse:frequency_hz" value="30" type="float"/>
-	<setting name="draw_debug" value="false" type="bool" comment=' Optional bounds around the world. You can specify in either unit or fixed.
-		Unit of course is more flexible, but might not work if your world bounds don&apos;t
-		match your physics bound. Fixed overrides unit. '/>
-	<setting name="bounds:unit" value="0, 0, 1.0, 1.0" type="rect" />
-	<setting name="bounds:restitution" value="0.1" type="float" />
+	<setting name="draw_debug" value="false" type="bool" />
+	<setting name="bounds:unit" value="0.1, 0.1, 0.9, 0.9" type="rect"/>
+	<setting name="bounds:restitution" value="0.1" type="float"/>
 </settings>
-

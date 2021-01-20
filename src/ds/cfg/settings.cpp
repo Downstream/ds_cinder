@@ -28,6 +28,7 @@ const std::string&				SETTING_TYPE_VEC2 = "vec2";
 const std::string&				SETTING_TYPE_VEC3 = "vec3";
 const std::string&				SETTING_TYPE_RECT = "rect";
 const std::string&				SETTING_TYPE_SECTION_HEADER = "section_header";
+const std::string&				SETTING_TYPE_TEXT_STYLE = "text_style";
 
 namespace {
 
@@ -49,6 +50,7 @@ void initialize_types(){
 		SETTING_TYPES.emplace_back(SETTING_TYPE_VEC3);
 		SETTING_TYPES.emplace_back(SETTING_TYPE_RECT);
 		SETTING_TYPES.emplace_back(SETTING_TYPE_SECTION_HEADER);
+		SETTING_TYPES.emplace_back(SETTING_TYPE_TEXT_STYLE);
 	}
 }
 
@@ -217,7 +219,7 @@ void Settings::directReadFrom(const std::string& filename, const bool clearAll){
 		return;
 	}
 
-	if(!safeFileExistsCheck(filename)){
+	if(!safeFileExistsCheck(filename, false)){
 		return;
 	}
 

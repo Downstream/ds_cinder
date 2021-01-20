@@ -1,83 +1,33 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\src\app\app_defs.cpp">
+    <ClCompile Include="..\src\app\scroll_example_app.cpp">
       <Filter>src\app</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\app\globals.cpp">
-      <Filter>src\app</Filter>
+    <ClCompile Include="..\src\stdafx.cpp">
+      <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\query\query_handler.cpp">
-      <Filter>src\query</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\model\generated\story_model.cpp">
-      <Filter>src\model\generated</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\query\story_query.cpp">
-      <Filter>src\query</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\app\scrollexample_app.cpp">
-      <Filter>src\app</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\ui\info_list\info_list.cpp">
-      <Filter>src\ui\info_list</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\ui\info_list\info_list_item.cpp">
-      <Filter>src\ui\info_list</Filter>
+    <ClCompile Include="..\src\ui\scroll\scroll_controller.cpp">
+      <Filter>src\ui\scroll</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\app\app_defs.h">
-      <Filter>src\app</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\events\app_events.h">
       <Filter>src\events</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\app\globals.h">
+    <ClInclude Include="..\src\app\scroll_example_app.h">
       <Filter>src\app</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\query\query_handler.h">
-      <Filter>src\query</Filter>
+    <ClInclude Include="..\src\stdafx.h">
+      <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\model\all_data.h">
-      <Filter>src\model</Filter>
+    <ClInclude Include="..\src\ui\scroll\scroll_controller.h">
+      <Filter>src\ui\scroll</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\model\generated\story_model.h">
-      <Filter>src\model\generated</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\query\story_query.h">
-      <Filter>src\query</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\model\all_stories.h">
-      <Filter>src\model</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\app\scrollexample_app.h">
-      <Filter>src\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\ui\info_list\info_list.h">
-      <Filter>src\ui\info_list</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\ui\info_list\info_list_item.h">
-      <Filter>src\ui\info_list</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Resources.rc">
-      <Filter>Resources</Filter>
-    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
       <UniqueIdentifier>{bd651da1-0866-4e2a-aa82-d56951beeff3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\model">
-      <UniqueIdentifier>{319fa3ee-b4b6-4c09-82f9-ae7e64131109}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\model\generated">
-      <UniqueIdentifier>{1508715c-b79f-4ac7-a607-eac85980f6a0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\query">
-      <UniqueIdentifier>{7406c89a-2752-4cbf-b0fc-2db2c8ec7223}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\ui">
       <UniqueIdentifier>{9b9f5de1-cbd5-4cb7-a580-46be59c2cf82}</UniqueIdentifier>
@@ -91,8 +41,13 @@
     <Filter Include="Resources">
       <UniqueIdentifier>{3eca459a-2fc2-4471-8dd4-6c188d47d4f9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\ui\info_list">
-      <UniqueIdentifier>{2cb44903-dcf8-4228-8039-89bb20dfcef4}</UniqueIdentifier>
+    <Filter Include="src\ui\scroll">
+      <UniqueIdentifier>{6ee7ca9f-f1f5-4bd4-a2c4-ec43623a5071}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

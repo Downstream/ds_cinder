@@ -8,8 +8,8 @@
       <PreprocessorDefinitions>_WIN32_WINNT=0x0602;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\include;..\src;$(CINDER_090)\include;
 	  $(CINDER_090)\boost;
-	  $(DS_PLATFORM_090)\src\osc\;
-	  $(DS_PLATFORM_090)\src\tuio\;
+	  $(CINDER_090)\blocks\TUIO\src;
+	  $(CINDER_090)\blocks\OSC\src;
 	  $(DS_PLATFORM_090)\lib\poco\include;
 	  $(DS_PLATFORM_090)\src;
 	  $(DS_PLATFORM_090)\src\gtk;

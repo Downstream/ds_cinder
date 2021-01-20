@@ -277,6 +277,14 @@ bool World::makeCollision(const b2Fixture& fix, Collision& c) const
 	return true;
 }
 
+void World::runAhead(const int iterations) {
+	ds::UpdateParams p = ds::UpdateParams();
+	p.setDeltaTime(1.0f / 60.0f);
+	for (int i = 0; i < iterations; i++) {
+		update(p);
+	}
+}
+
 void World::update(const ds::UpdateParams& p)
 {
 	mContactListener.clear();

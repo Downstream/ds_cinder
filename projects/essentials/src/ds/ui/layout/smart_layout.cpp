@@ -89,7 +89,7 @@ void SmartLayout::setSpriteFont(const std::string& spriteName, const std::string
 	ds::ui::Text* spr = getSprite<ds::ui::Text>(spriteName);
 
 	if (spr) {
-		mEngine.getEngineCfg().getText(textCfgName).configure(*spr);
+		spr->setTextStyle(textCfgName);
 		mNeedsLayout = true;
 	} else {
 		DS_LOG_WARNING("Failed to set Font " << textCfgName << " for Sprite: " << spriteName);

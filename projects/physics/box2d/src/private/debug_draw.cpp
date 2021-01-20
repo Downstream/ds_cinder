@@ -19,6 +19,11 @@ DebugDraw::DebugDraw(ds::ui::SpriteEngine& e, b2World& b2w, ds::physics::World &
 	SetFlags( b2Draw::e_shapeBit | b2Draw::e_jointBit );
 }
 
+
+DebugDraw::~DebugDraw() {
+	mB2World.SetDebugDraw(nullptr);
+}
+
 void DebugDraw::DrawPolygon(const b2Vec2* vertices, int32 vertexCount, const b2Color& color) {
 	ci::gl::color(color.r, color.g, color.b);
 	ci::gl::begin(GL_LINE_LOOP);
@@ -80,16 +85,11 @@ void DebugDraw::DrawTransform(const b2Transform& xf) {
 
 void DebugDraw::drawClient(const ci::mat4& t, const DrawParams& p) {
 	ci::gl::pushModelView();
-
-	// TODO ? Most of this was guessed-at during the 0.9 update and may need revision
-	//glLoadIdentity();
 	auto trans = t;
-	float scale = 1.0f / mPhysicsWorld.getCi2BoxScale();
+	float scale = 1.0f / (mPhysicsWorld.getCi2BoxScale() * 7.07f); // i have no clue why it's 7.07 but that seems to work
 	trans = glm::scale(trans, ci::vec3(scale, scale, scale));
-	//trans.scale( ci::vec2(scale, scale) );
 	ci::gl::setModelMatrix(trans);
 	ci::gl::setViewMatrix(trans);
-//	ci::gl::multModelView(trans);
 	mB2World.DrawDebugData();
 	ci::gl::popModelView();
 }
