@@ -1851,96 +1851,101 @@ ds::ui::Sprite* XmlImporter::createSpriteByType(ds::ui::SpriteEngine& engine, co
 		spriddy = new ds::ui::PerspectiveLayout(engine);
 	} else if (type == "soft_keyboard") {
 		SoftKeyboardSettings sks;
-		auto				 tokens		  = ds::split(value, "; ", true);
+		auto                 defaultSettings = engine.getAppSettings().getString("keyboard:defaults", 0, "");
+		auto				 defaultTokens = ds::split(defaultSettings, "; ", true);
+		auto				 spriteTokens = ds::split(value, "; ", true);
+		std::vector<std::string> tokenTypes[]{ defaultTokens, spriteTokens };
 		std::string			 keyboardType = "standard";
-		for (auto it : tokens) {
-			auto colony = it.find(":");
-			if (colony != std::string::npos) {
-				std::string paramType  = it.substr(0, colony);
-				std::string theValue = it.substr(colony + 1);
-				if (paramType.empty() || theValue.empty()) continue;
+		for (auto tokenType : tokenTypes) {
+			for (auto it : tokenType) {
+				auto colony = it.find(":");
+				if (colony != std::string::npos) {
+					std::string paramType  = it.substr(0, colony);
+					std::string theValue = it.substr(colony + 1);
+					if (paramType.empty() || theValue.empty()) continue;
 
-				std::string paramValue = ds::cfg::SettingsVariables::replaceVariables(theValue, local_map);
-				paramValue = ds::cfg::SettingsVariables::parseAllExpressions(paramValue);
+					std::string paramValue = ds::cfg::SettingsVariables::replaceVariables(theValue, local_map);
+					paramValue = ds::cfg::SettingsVariables::parseAllExpressions(paramValue);
 
-				if (paramType == "type") {
-					keyboardType = paramValue;
-				} else if (paramType == "key_up_text_config") {
-					sks.mKeyUpTextConfig = paramValue;
-				} else if (paramType == "key_dn_text_config") {
-					sks.mKeyDnTextConfig = paramValue;
-				} else if (paramType == "key_up_color") {
-					sks.mKeyUpColor = parseColor(paramValue, engine);
-				} else if (paramType == "key_down_color") {
-					sks.mKeyDownColor = parseColor(paramValue, engine);
-				} else if (paramType == "key_text_offset") {
-					sks.mKeyTextOffset = ci::vec2(parseVector(paramValue));
-				} else if (paramType == "key_touch_padding") {
-					sks.mKeyTouchPadding = ds::string_to_float(paramValue);
-				} else if (paramType == "key_initial_position") {
-					sks.mKeyInitialPosition = ci::vec2(parseVector(paramValue));
-				} else if (paramType == "key_scale") {
-					sks.mKeyScale = ds::string_to_float(paramValue);
-				} else if (paramType == "img_letter_up") {
-					sks.mKeyLetterUpImage = ds::Environment::expand(paramValue);
-				} else if (paramType == "img_letter_dn") {
-					sks.mKeyLetterDnImage = ds::Environment::expand(paramValue);
-				} else if (paramType == "img_number_up") {
-					sks.mKeyNumberUpImage = ds::Environment::expand(paramValue);
-				} else if (paramType == "img_number_dn") {
-					sks.mKeyNumberDnImage = ds::Environment::expand(paramValue);
-				} else if (paramType == "img_space_up") {
-					sks.mKeySpaceUpImage = ds::Environment::expand(paramValue);
-				} else if (paramType == "img_space_dn") {
-					sks.mKeySpaceDnImage = ds::Environment::expand(paramValue);
-				} else if (paramType == "img_enter_up") {
-					sks.mKeyEnterUpImage = ds::Environment::expand(paramValue);
-				} else if (paramType == "img_enter_dn") {
-					sks.mKeyEnterDnImage = ds::Environment::expand(paramValue);
-				} else if (paramType == "img_delete_up") {
-					sks.mKeyDeleteUpImage = ds::Environment::expand(paramValue);
-				} else if (paramType == "img_delete_dn") {
-					sks.mKeyDeleteDnImage = ds::Environment::expand(paramValue);
-				} else if (paramType == "img_shift_up") {
-					sks.mKeyShiftUpImage = ds::Environment::expand(paramValue);
-				} else if (paramType == "img_shift_dn") {
-					sks.mKeyShiftDnImage = ds::Environment::expand(paramValue);
-				} else if (paramType == "img_tab_up") {
-					sks.mKeyTabUpImage = ds::Environment::expand(paramValue);
-				} else if (paramType == "img_tab_dn") {
-					sks.mKeyTabDnImage = ds::Environment::expand(paramValue);
-				} else if (paramType == "img_up_none") {
-					if (parseBoolean(paramValue)) {
-						sks.mKeyLetterUpImage = "";
-						sks.mKeyNumberUpImage = "";
-						sks.mKeySpaceUpImage = "";
-						sks.mKeyEnterUpImage = "";
-						sks.mKeyDeleteUpImage = "";
-						sks.mKeyShiftUpImage = "";
-						sks.mKeyTabUpImage = "";
-					}
-				} else if (paramType == "email_mode") {
-					sks.mEmailMode = parseBoolean(paramValue);
-				} else if(paramType == "graphic_keys") {
-					sks.mGraphicKeys = parseBoolean(paramValue);
-				} else if(paramType == "graphic_type") {
-					if(paramValue == "solid") {
-						sks.mGraphicType = SoftKeyboardSettings::kSolid;
-					} else if(paramValue == "circular_border") {
-						sks.mGraphicType = SoftKeyboardSettings::kCircularBorder;
-					} else if(paramValue == "circular_solid") {
-						sks.mGraphicType = SoftKeyboardSettings::kCircularSolid;
+					if (paramType == "type") {
+						keyboardType = paramValue;
+					} else if (paramType == "key_up_text_config") {
+						sks.mKeyUpTextConfig = paramValue;
+					} else if (paramType == "key_dn_text_config") {
+						sks.mKeyDnTextConfig = paramValue;
+					} else if (paramType == "key_up_color") {
+						sks.mKeyUpColor = parseColor(paramValue, engine);
+					} else if (paramType == "key_down_color") {
+						sks.mKeyDownColor = parseColor(paramValue, engine);
+					} else if (paramType == "key_text_offset") {
+						sks.mKeyTextOffset = ci::vec2(parseVector(paramValue));
+					} else if (paramType == "key_touch_padding") {
+						sks.mKeyTouchPadding = ds::string_to_float(paramValue);
+					} else if (paramType == "key_initial_position") {
+						sks.mKeyInitialPosition = ci::vec2(parseVector(paramValue));
+					} else if (paramType == "key_scale") {
+						sks.mKeyScale = ds::string_to_float(paramValue);
+					} else if (paramType == "img_letter_up") {
+						sks.mKeyLetterUpImage = ds::Environment::expand(paramValue);
+					} else if (paramType == "img_letter_dn") {
+						sks.mKeyLetterDnImage = ds::Environment::expand(paramValue);
+					} else if (paramType == "img_number_up") {
+						sks.mKeyNumberUpImage = ds::Environment::expand(paramValue);
+					} else if (paramType == "img_number_dn") {
+						sks.mKeyNumberDnImage = ds::Environment::expand(paramValue);
+					} else if (paramType == "img_space_up") {
+						sks.mKeySpaceUpImage = ds::Environment::expand(paramValue);
+					} else if (paramType == "img_space_dn") {
+						sks.mKeySpaceDnImage = ds::Environment::expand(paramValue);
+					} else if (paramType == "img_enter_up") {
+						sks.mKeyEnterUpImage = ds::Environment::expand(paramValue);
+					} else if (paramType == "img_enter_dn") {
+						sks.mKeyEnterDnImage = ds::Environment::expand(paramValue);
+					} else if (paramType == "img_delete_up") {
+						sks.mKeyDeleteUpImage = ds::Environment::expand(paramValue);
+					} else if (paramType == "img_delete_dn") {
+						sks.mKeyDeleteDnImage = ds::Environment::expand(paramValue);
+					} else if (paramType == "img_shift_up") {
+						sks.mKeyShiftUpImage = ds::Environment::expand(paramValue);
+					} else if (paramType == "img_shift_dn") {
+						sks.mKeyShiftDnImage = ds::Environment::expand(paramValue);
+					} else if (paramType == "img_tab_up") {
+						sks.mKeyTabUpImage = ds::Environment::expand(paramValue);
+					} else if (paramType == "img_tab_dn") {
+						sks.mKeyTabDnImage = ds::Environment::expand(paramValue);
+					} else if (paramType == "img_up_none") {
+						if (parseBoolean(paramValue)) {
+							sks.mKeyLetterUpImage = "";
+							sks.mKeyNumberUpImage = "";
+							sks.mKeySpaceUpImage = "";
+							sks.mKeyEnterUpImage = "";
+							sks.mKeyDeleteUpImage = "";
+							sks.mKeyShiftUpImage = "";
+							sks.mKeyTabUpImage = "";
+						}
+					} else if (paramType == "email_mode") {
+						sks.mEmailMode = parseBoolean(paramValue);
+					} else if(paramType == "graphic_keys") {
+						sks.mGraphicKeys = parseBoolean(paramValue);
+					} else if(paramType == "graphic_type") {
+						if(paramValue == "solid") {
+							sks.mGraphicType = SoftKeyboardSettings::kSolid;
+						} else if(paramValue == "circular_border") {
+							sks.mGraphicType = SoftKeyboardSettings::kCircularBorder;
+						} else if(paramValue == "circular_solid") {
+							sks.mGraphicType = SoftKeyboardSettings::kCircularSolid;
+						} else {
+							sks.mGraphicType = SoftKeyboardSettings::kBorder;
+						}
+					} else if(paramType == "graphic_key_size") {
+						sks.mGraphicKeySize = ds::string_to_float(paramValue);
+					} else if(paramType == "graphic_corner_radius") {
+						sks.mGraphicRoundedCornerRadius = ds::string_to_float(paramValue);
+					} else if(paramType == "graphic_border_width") {
+						sks.mGraphicBorderWidth = ds::string_to_float(paramValue);
 					} else {
-						sks.mGraphicType = SoftKeyboardSettings::kBorder;
+						DS_LOG_WARNING("SoftKeyboard interface setting not recognized: " << paramType);
 					}
-				} else if(paramType == "graphic_key_size") {
-					sks.mGraphicKeySize = ds::string_to_float(paramValue);
-				} else if(paramType == "graphic_corner_radius") {
-					sks.mGraphicRoundedCornerRadius = ds::string_to_float(paramValue);
-				} else if(paramType == "graphic_border_width") {
-					sks.mGraphicBorderWidth = ds::string_to_float(paramValue);
-				} else {
-					DS_LOG_WARNING("SoftKeyboard interface setting not recognized: " << paramType);
 				}
 			}
 		}
