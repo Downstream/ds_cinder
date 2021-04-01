@@ -61,8 +61,7 @@ class XmlImporter {
 	/// Creates a new sprite based on the type string ("sprite", "text", "layout", etc),
 	/// The value is an optional value, and can provide a default value for some sprite types. For instance, text will get the
 	/// value as text, image will try to load an image at the value file path
-	static ds::ui::Sprite* createSpriteByType(ds::ui::SpriteEngine& engine, const std::string& type,
-											  const std::string& value = "");
+	static ds::ui::Sprite* createSpriteByType(ds::ui::SpriteEngine& engine, const std::string& type, const std::string& value = "", ds::cfg::VariableMap& local_map = ds::cfg::VariableMap());
 	static void			   getSpriteProperties(ds::ui::Sprite& sp, ci::XmlTree& xml);
 
 	/// the opposite of loading an xml to a sprite

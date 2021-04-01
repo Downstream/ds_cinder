@@ -24,29 +24,11 @@
     <ClInclude Include="src\ds\physics\body_builder.h">
       <Filter>src\ds\physics</Filter>
     </ClInclude>
-    <ClInclude Include="src\private\world.h">
-      <Filter>src\private</Filter>
-    </ClInclude>
-    <ClInclude Include="src\private\contact_listener.h">
-      <Filter>src\private</Filter>
-    </ClInclude>
     <ClInclude Include="src\ds\physics\collision.h">
       <Filter>src\ds\physics</Filter>
     </ClInclude>
-    <ClInclude Include="src\private\contact_key.h">
-      <Filter>src\private</Filter>
-    </ClInclude>
-    <ClInclude Include="src\private\service.h">
-      <Filter>src\private</Filter>
-    </ClInclude>
     <ClInclude Include="src\ds\physics\sprite_world.h">
       <Filter>src\ds\physics</Filter>
-    </ClInclude>
-    <ClInclude Include="src\private\touch.h">
-      <Filter>src\private</Filter>
-    </ClInclude>
-    <ClInclude Include="src\private\debug_draw.h">
-      <Filter>src\private</Filter>
     </ClInclude>
     <ClInclude Include="lib\Box2D\Box2D.h">
       <Filter>src\private\box2D</Filter>
@@ -189,6 +171,24 @@
     <ClInclude Include="lib\Box2D\Rope\b2Rope.h">
       <Filter>src\private\box2D</Filter>
     </ClInclude>
+    <ClInclude Include="src\ds\physics\contact_key.h">
+      <Filter>src\ds\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ds\physics\contact_listener.h">
+      <Filter>src\ds\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ds\physics\debug_draw.h">
+      <Filter>src\ds\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ds\physics\service.h">
+      <Filter>src\ds\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ds\physics\touch.h">
+      <Filter>src\ds\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ds\physics\world.h">
+      <Filter>src\ds\physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ds\physics\sprite_body.cpp">
@@ -197,29 +197,11 @@
     <ClCompile Include="src\ds\physics\body_builder.cpp">
       <Filter>src\ds\physics</Filter>
     </ClCompile>
-    <ClCompile Include="src\private\world.cpp">
-      <Filter>src\private</Filter>
-    </ClCompile>
-    <ClCompile Include="src\private\contact_listener.cpp">
-      <Filter>src\private</Filter>
-    </ClCompile>
     <ClCompile Include="src\ds\physics\collision.cpp">
       <Filter>src\ds\physics</Filter>
     </ClCompile>
-    <ClCompile Include="src\private\contact_key.cpp">
-      <Filter>src\private</Filter>
-    </ClCompile>
-    <ClCompile Include="src\private\service.cpp">
-      <Filter>src\private</Filter>
-    </ClCompile>
     <ClCompile Include="src\ds\physics\sprite_world.cpp">
       <Filter>src\ds\physics</Filter>
-    </ClCompile>
-    <ClCompile Include="src\private\touch.cpp">
-      <Filter>src\private</Filter>
-    </ClCompile>
-    <ClCompile Include="src\private\debug_draw.cpp">
-      <Filter>src\private</Filter>
     </ClCompile>
     <ClCompile Include="lib\Box2D\Collision\b2BroadPhase.cpp">
       <Filter>src\private\box2D</Filter>
@@ -358,6 +340,24 @@
     </ClCompile>
     <ClCompile Include="lib\Box2D\Rope\b2Rope.cpp">
       <Filter>src\private\box2D</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ds\physics\contact_key.cpp">
+      <Filter>src\ds\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ds\physics\contact_listener.cpp">
+      <Filter>src\ds\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ds\physics\debug_draw.cpp">
+      <Filter>src\ds\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ds\physics\service.cpp">
+      <Filter>src\ds\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ds\physics\touch.cpp">
+      <Filter>src\ds\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ds\physics\world.cpp">
+      <Filter>src\ds\physics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -13,6 +13,7 @@ namespace {
 std::string			PROJECT_PATH;
 // The configuration settings
 std::string			CONFIGURATION_FOLDER;
+std::string			CONFIGURATION_OVERRIDE_FOLDER;
 
 static bool			get_key_value(const std::string& arg, std::string& key, std::string& value) {
 	const std::string	SEP_SZ("=");
@@ -136,6 +137,10 @@ void EngineSettings::loadInitialSettings() {
 		? mConfiguration.getString("folder", 0, "")
 		: commandLineAppConfig;
 
+	if(!CONFIGURATION_OVERRIDE_FOLDER.empty()){
+		CONFIGURATION_FOLDER = CONFIGURATION_OVERRIDE_FOLDER;
+	}
+
 	// If the folder exists, then apply any changes to the engine file
 	if(!CONFIGURATION_FOLDER.empty()) {
 		const std::string		app = ds::Environment::expand("%APP%/settings/%CFG_FOLDER%/" + appFilename);
@@ -184,6 +189,7 @@ void EngineSettings::setDefaults(){
 	getSetting("screen:title", 0, ds::cfg::SETTING_TYPE_STRING, "The title of the window. Generally only displays if the screen mode is windowed.");
 	getSetting("screen:mode", 0, ds::cfg::SETTING_TYPE_STRING,  "How the primary window displays, including fullscreen", "borderless", "", "", "window, borderless, fullscreen");
 	getSetting("screen:always_on_top", 0, ds::cfg::SETTING_TYPE_BOOL, "Makes the window an always-on-top sort of window.", "false");
+	getSetting("screen:auto_size", 0, ds::cfg::SETTING_TYPE_STRING, "Classic uses the old src_rect/dst_rect and span_all_displays; letterbox will letterbox to your main monitor; all_span spans all displays; main_span fills the main display. letterbox requires having a world size set.", "classic", "", "", "classic, letterbox, all_span, main_span");
 	getSetting("console:show", 0, ds::cfg::SETTING_TYPE_BOOL, "Show console will create a console window, or not if this is false.", "false");
 	getSetting("idle_time", 0, ds::cfg::SETTING_TYPE_DOUBLE, "Seconds before idle happens. 300 = 5 minutes.", "300", "0", "1000");
 	getSetting("system:never_sleep", 0, ds::cfg::SETTING_TYPE_BOOL, "Prevent the system from sleeping or powering off the screen", "true");
@@ -250,6 +256,12 @@ void EngineSettings::setDefaults(){
 	getSetting("metrics:udp_host", 0, ds::cfg::SETTING_TYPE_STRING, "The host name to send udp metrics info to", "127.0.0.1");
 	getSetting("metrics:udp_port", 0, ds::cfg::SETTING_TYPE_STRING, "The port to send udp metrics info to", "8094");
 
+}
+
+
+void EngineSettings::setConfigurationOverride(std::string overrideFolder) {
+	CONFIGURATION_OVERRIDE_FOLDER = overrideFolder;
+	CONFIGURATION_FOLDER = overrideFolder;
 }
 
 const std::string& EngineSettings::getConfigurationFolder() {

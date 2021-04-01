@@ -11,17 +11,19 @@
 #include <ds/physics/sprite_body.h>
 #include <ds/physics/body_builder.h>
 
-#include "app/globals.h"
-#include "events/app_events.h"
-#include "ds/ui/interface_xml/interface_xml_importer.h"
 
 namespace physics {
 
-BouncyView::BouncyView(Globals& g)
-	: ds::ui::Sprite(g.mEngine)
-	, mEventClient(g.mEngine.getNotifier(), [this](const ds::Event *m) { if(m) this->onAppEvent(*m); })
-	, mGlobals(g)
+BouncyView::BouncyView(ds::ui::SpriteEngine& g)
+	: ds::ui::Sprite(g)
+	, mEventClient(g)
 {
+	mEventClient.listenToEvents<ds::cfg::Settings::SettingsEditedEvent>([this](auto& e) {
+		if (e.mSettingsType == "app_settings") {
+			rebuildBouncies();
+		}
+	});
+
 	rebuildBouncies();
 }
 
@@ -87,15 +89,6 @@ void BouncyView::rebuildBouncies() {
 		mPhysicsBodies.push_back(sb);
 		mCircles.push_back(ccv);
 	}
-}
-
-void BouncyView::onAppEvent(const ds::Event& in_e) {
-	if(in_e.mWhat == ds::cfg::Settings::SettingsEditedEvent::WHAT()) {
-		const ds::cfg::Settings::SettingsEditedEvent& e((const ds::cfg::Settings::SettingsEditedEvent&)in_e);
-		if(e.mSettingsType == "app_settings") {
-			rebuildBouncies();
-		}
-	} 
 }
 
 void BouncyView::animateOn() {

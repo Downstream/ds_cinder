@@ -65,6 +65,7 @@ class StreamPlayer : public ds::ui::Sprite {
 	bool									mEmbedInterface;
 	bool									mShowInterfaceAtStart;
 	bool									mInterfaceBelowMedia;
+	float									mInterfaceBottomPad = 50.0f;
 	bool									mLetterbox;
 	double									mStreamLatency;
 	std::function<void(void)>				mGoodStatusCallback;

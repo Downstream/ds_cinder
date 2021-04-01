@@ -66,7 +66,15 @@ auto INIT = []() {
 				auto& mvs				  = mediaPlayer.getSettings();
 				mvs.mShowInterfaceAtStart = ds::parseBoolean(theValue);
 				mediaPlayer.setSettings(mvs);
-			});
+		});
+
+		e.registerSpritePropertySetter<ds::ui::MediaPlayer>(
+			"media_player_interface_b_pad",
+			[](ds::ui::MediaPlayer& mediaPlayer, const std::string& theValue, const std::string& fileReferrer) {
+			auto& mvs = mediaPlayer.getSettings();
+			mvs.mInterfaceBottomPad = ds::string_to_float(theValue);
+			mediaPlayer.setSettings(mvs);
+		});
 
 		e.registerSpritePropertySetter<ds::ui::MediaPlayer>(
 			"media_player_web_size",

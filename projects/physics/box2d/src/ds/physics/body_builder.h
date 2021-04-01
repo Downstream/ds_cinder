@@ -1,6 +1,4 @@
 #pragma once
-#ifndef DS_PHYSICS_BODYBUILDER_H_
-#define DS_PHYSICS_BODYBUILDER_H_
 
 #include <vector>
 #include <cinder/Vector.h>
@@ -80,4 +78,3 @@ public:
 } // namespace physics
 } // namespace ds
 
-#endif // DS_PHYSICS_BODYBUILDER_H_

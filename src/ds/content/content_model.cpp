@@ -350,6 +350,14 @@ bool ContentModelRef::operator==(const ContentModelRef& b) const {
 	return false;
 }
 
+bool ContentModelRef::operator!=(const ContentModelRef& b) const {
+	if (*this == b){
+		return false;
+	} else {
+		return true;
+	}
+}
+
 const std::map<std::string, ContentProperty>& ContentModelRef::getProperties() {
 	if(!mData) return EMPTY_PROPERTY_MAP;
 	return mData->mProperties;

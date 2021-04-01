@@ -92,6 +92,7 @@ class PDFPlayer : public ds::ui::IPdf {
 	bool									mEmbedInterface;
 	bool									mShowInterfaceAtStart;
 	bool									mInterfaceBelowMedia;
+	float									mInterfaceBottomPad = 50.0f;
 	bool									mLetterbox;
 	bool									mShowingLinks = false;
 	bool									mCanShowLinks = true;

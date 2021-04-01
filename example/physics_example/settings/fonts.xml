@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<settings>
-	<setting name="Noto Sans Bold" value="%APP%/data/fonts/NotoSans-Bold.ttf" type="string" comment=" Link together a font name and a font file "/>
-</settings>
-

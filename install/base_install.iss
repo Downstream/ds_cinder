@@ -34,7 +34,7 @@ DisableStartupPrompt=yes
 DisableWelcomePage=yes
 
 [Files]
-Source: "vs2015/Release/*"; Excludes:"*\GPUCache\*,*.iobj,*.ipdb,{#APP_EXE}"; DestDir: "{app}"; Flags: recursesubdirs
+Source: "vs2015/Release/*"; Excludes:"*\GPUCache\*,*.iobj,*.ipdb, *.pdb,{#APP_EXE}"; DestDir: "{app}"; Flags: recursesubdirs
 Source: "settings/*"; Excludes:"*configuration.xml"; DestDir: "{app}/settings"; Flags: recursesubdirs
 Source: "data/*"; DestDir: "{app}/data"; Flags: recursesubdirs
 
@@ -98,9 +98,10 @@ Name: "{commonstartup}\{#APP_NAME}"; Filename: "{app}\{#APP_EXE}"
 #endif
 
 [Registry]
-#ifdef IS_PRODUCTION
 ; Sets the environment variable for pango text to look goodly
-Root: HKLM; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "PANGOCAIRO_BACKEND"; ValueData: "fontconfig"
+Root: HKCU; Subkey: "Environment"; ValueType: string; ValueName: "PANGOCAIRO_BACKEND"; ValueData: "fontconfig"; Flags: preservestringtype
+
+#ifdef IS_PRODUCTION
 ; Disable the "program not responding" if this app crashed
 Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows\Windows Error Reporting"; ValueType: dword; ValueName: "DontShowUI"; ValueData: "1"
 

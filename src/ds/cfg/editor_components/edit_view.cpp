@@ -180,7 +180,7 @@ void EditView::setSetting(Settings::Setting* theSetting, const std::string& pare
 		mCheckBox = new ds::ui::ControlCheckBox(mEngine);
 		mCheckBox->mLayoutLPad = 5.0f;
 		mCheckBox->mLayoutRPad = 5.0f;
-		mCheckBox->setLabelTextConfig("Arial Bold", 18.0f, ci::ColorA(1.0f, 1.0f, 1.0f));
+		mCheckBox->setLabelTextStyle("Arial Bold", 18.0f, ci::ColorA(1.0f, 1.0f, 1.0f));
 		mCheckBox->mLayoutUserType = ds::ui::LayoutSprite::kFixedSize;
 		mCheckBox->setCheckboxUpdatedCallback([this](const bool isChecked){
 			if(isChecked){
@@ -196,13 +196,13 @@ void EditView::setSetting(Settings::Setting* theSetting, const std::string& pare
 		ds::ui::EntryFieldSettings efs;
 		efs.mFieldSize = ci::vec2(600.0f, 40.0f);
 
-		if(!mEngine.getEngineCfg().hasText("settings_editor:edit_view:entry:field")) {
-			ds::cfg::Text textCfg;
+		if(!mEngine.getEngineCfg().hasTextStyle("settings_editor:edit_view:entry:field")) {
+			ds::ui::TextStyle textCfg;
 			textCfg.mFont = "Arial";
 			textCfg.mSize = 18.0f;
 			textCfg.mColor = ci::Color::white();
 			textCfg.mLeading = 1.0f;
-			mEngine.getEngineCfg().setText("settings_editor:edit_view:entry:field", textCfg);
+			mEngine.getEngineCfg().setTextStyle("settings_editor:edit_view:entry:field", textCfg);
 		}
 		efs.mTextConfig = "settings_editor:edit_view:entry:field";
 		efs.mCursorOffset.x = 0.0f;
@@ -220,21 +220,21 @@ void EditView::setSetting(Settings::Setting* theSetting, const std::string& pare
 		sks.mGraphicKeySize = 32.0f;
 		sks.mKeyTouchPadding = 2.5f;
 		sks.mGraphicType = ds::ui::SoftKeyboardSettings::kSolid;
-		if(!mEngine.getEngineCfg().hasText("settings_editor:edit_view:keyboard:key_up")) {
-			ds::cfg::Text textCfg;
+		if(!mEngine.getEngineCfg().hasTextStyle("settings_editor:edit_view:keyboard:key_up")) {
+			ds::ui::TextStyle textCfg;
 			textCfg.mFont = "Arial";
 			textCfg.mSize = 14.0f;
 			textCfg.mColor = ci::Color::white();
 			textCfg.mLeading = 1.0f;
-			mEngine.getEngineCfg().setText("settings_editor:edit_view:keyboard:key_up", textCfg);
+			mEngine.getEngineCfg().setTextStyle("settings_editor:edit_view:keyboard:key_up", textCfg);
 		}
-		if(!mEngine.getEngineCfg().hasText("settings_editor:edit_view:keyboard:key_dn")) {
-			ds::cfg::Text textCfg;
+		if(!mEngine.getEngineCfg().hasTextStyle("settings_editor:edit_view:keyboard:key_dn")) {
+			ds::ui::TextStyle textCfg;
 			textCfg.mFont = "Arial";
 			textCfg.mSize = 14.0f;
 			textCfg.mColor = ci::Color(0.5f, 0.5f, 0.5f);
 			textCfg.mLeading = 1.0f;
-			mEngine.getEngineCfg().setText("settings_editor:edit_view:keyboard:key_dn", textCfg);
+			mEngine.getEngineCfg().setTextStyle("settings_editor:edit_view:keyboard:key_dn", textCfg);
 		}
 		sks.mKeyDnTextConfig = "settings_editor:edit_view:keyboard:key_dn";
 		sks.mKeyUpTextConfig = "settings_editor:edit_view:keyboard:key_up";

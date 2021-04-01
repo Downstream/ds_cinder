@@ -11,9 +11,9 @@
 	<setting name="xml_importer:cache" value="true" type="bool" comment="If the xml importer should cache xml content or reload from disk each time" default="true"/>
 	<setting name="WINDOW SETTINGS" value="" type="section_header"/>
 	<setting name="span_all_displays" value="false" type="bool" comment="Automatically spans displays and overrides world size, src/dst rect and screen:mode" default="false"/>
-	<setting name="world_dimensions" value="1920, 1080" type="vec2"/>
-	<setting name="src_rect" value="0, 0, 1920, 1080" type="rect"/>
-	<setting name="dst_rect" value="0, 0, 1920, 1080" type="rect"/>
+	<setting name="world_dimensions" value="2560, 1440" type="vec2"/>
+	<setting name="src_rect" value="0, 0, 2560, 1440" type="rect"/>
+	<setting name="dst_rect" value="0, 0, 2560, 1440" type="rect"/>
 	<setting name="screen:title" value="Downstream Application" type="string" comment="The title of the window. Generally only displays if the screen mode is windowed."/>
 	<setting name="screen:mode" value="borderless" type="string" comment="How the primary window displays, including fullscreen" default="borderless" possibles="window, borderless, fullscreen"/>
 	<setting name="screen:always_on_top" value="false" type="bool" comment="Makes the window an always-on-top sort of window." default="false"/>

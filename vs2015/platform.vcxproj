@@ -5,12 +5,18 @@
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_Debug_Info|x64">
+      <Configuration>Release_Debug_Info</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(CINDER_090)\blocks\OSC\src\cinder\osc\Osc.h" />
+    <ClInclude Include="$(CINDER_090)\blocks\TUIO\src\cinder\tuio\Tuio.h" />
     <ClInclude Include="..\src\ds\app\app.h" />
     <ClInclude Include="..\src\ds\app\app_defs.h" />
     <ClInclude Include="..\src\ds\app\auto_draw.h" />
@@ -41,7 +47,6 @@
     <ClInclude Include="..\src\ds\app\event_client.h" />
     <ClInclude Include="..\src\ds\app\event_notifier.h" />
     <ClInclude Include="..\src\ds\app\event_registry.h" />
-    <ClInclude Include="..\src\ds\cfg\cfg_text.h" />
     <ClInclude Include="..\src\ds\cfg\editor_components\editor_item.h" />
     <ClInclude Include="..\src\ds\cfg\editor_components\edit_view.h" />
     <ClInclude Include="..\src\ds\cfg\settings.h" />
@@ -135,24 +140,6 @@
     <ClInclude Include="..\src\ds\util\sundown\buffer.h" />
     <ClInclude Include="..\src\ds\util\sundown\markdown.h" />
     <ClInclude Include="..\src\ds\util\sundown\stack.h" />
-    <ClInclude Include="..\src\osc\ip\IpEndpointName.h" />
-    <ClInclude Include="..\src\osc\ip\NetworkingUtils.h" />
-    <ClInclude Include="..\src\osc\ip\PacketListener.h" />
-    <ClInclude Include="..\src\osc\ip\TimerListener.h" />
-    <ClInclude Include="..\src\osc\ip\UdpSocket.h" />
-    <ClInclude Include="..\src\osc\OscArg.h" />
-    <ClInclude Include="..\src\osc\OscBundle.h" />
-    <ClInclude Include="..\src\osc\OscListener.h" />
-    <ClInclude Include="..\src\osc\OscMessage.h" />
-    <ClInclude Include="..\src\osc\OscSender.h" />
-    <ClInclude Include="..\src\osc\osc\MessageMappingOscPacketListener.h" />
-    <ClInclude Include="..\src\osc\osc\OscException.h" />
-    <ClInclude Include="..\src\osc\osc\OscHostEndianness.h" />
-    <ClInclude Include="..\src\osc\osc\OscOutboundPacketStream.h" />
-    <ClInclude Include="..\src\osc\osc\OscPacketListener.h" />
-    <ClInclude Include="..\src\osc\osc\OscPrintReceivedElements.h" />
-    <ClInclude Include="..\src\osc\osc\OscReceivedElements.h" />
-    <ClInclude Include="..\src\osc\osc\OscTypes.h" />
     <ClInclude Include="..\src\stdafx.h" />
     <ClInclude Include="..\src\ds\storage\directory_watcher.h" />
     <ClInclude Include="..\src\ds\storage\persistent_cache.h" />
@@ -210,12 +197,14 @@
     <ClInclude Include="..\src\ds\util\memory_ds.h" />
     <ClInclude Include="..\src\ds\util\notifier.h" />
     <ClInclude Include="..\src\ds\util\string_util.h" />
-    <ClInclude Include="..\src\tuio\TuioClient.h" />
-    <ClInclude Include="..\src\tuio\TuioCursor.h" />
-    <ClInclude Include="..\src\tuio\TuioObject.h" />
-    <ClInclude Include="..\src\tuio\TuioProfileBase.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(CINDER_090)\blocks\OSC\src\cinder\osc\Osc.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="$(CINDER_090)\blocks\TUIO\src\cinder\tuio\Tuio.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\src\ds\app\app.cpp" />
     <ClCompile Include="..\src\ds\app\app_defs.cpp" />
     <ClCompile Include="..\src\ds\app\auto_draw.cpp" />
@@ -243,7 +232,6 @@
     <ClCompile Include="..\src\ds\app\event_client.cpp" />
     <ClCompile Include="..\src\ds\app\event_notifier.cpp" />
     <ClCompile Include="..\src\ds\app\event_registry.cpp" />
-    <ClCompile Include="..\src\ds\cfg\cfg_text.cpp" />
     <ClCompile Include="..\src\ds\cfg\editor_components\editor_item.cpp" />
     <ClCompile Include="..\src\ds\cfg\editor_components\edit_view.cpp" />
     <ClCompile Include="..\src\ds\cfg\settings.cpp" />
@@ -266,6 +254,7 @@
     <ClCompile Include="..\src\ds\debug\computer_info.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_Debug_Info|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\src\ds\debug\debug_defines.cpp" />
     <ClCompile Include="..\src\ds\debug\key_manager.cpp" />
@@ -288,7 +277,6 @@
     <ClCompile Include="..\src\ds\network\tcp_socket_sender.cpp" />
     <ClCompile Include="..\src\ds\network\udp_connection.cpp" />
     <ClCompile Include="..\src\ds\params\camera_params.cpp" />
-    <ClCompile Include="..\src\ds\params\draw_params.cpp" />
     <ClCompile Include="..\src\ds\params\update_params.cpp" />
     <ClCompile Include="..\src\ds\query\query_client.cpp" />
     <ClCompile Include="..\src\ds\query\query_result.cpp" />
@@ -297,6 +285,7 @@
     <ClCompile Include="..\src\ds\query\sqlite\sqlite3.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_Debug_Info|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\src\ds\query\sql_database.cpp" />
     <ClCompile Include="..\src\ds\query\sql_query_result_builder.cpp" />
@@ -320,33 +309,27 @@
     <ClCompile Include="..\src\ds\util\sundown\autolink.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_Debug_Info|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\src\ds\util\sundown\buffer.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_Debug_Info|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\src\ds\util\sundown\markdown.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_Debug_Info|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\src\ds\util\sundown\stack.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_Debug_Info|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\src\osc\ip\IpEndpointName.cpp" />
-    <ClCompile Include="..\src\osc\ip\win32\NetworkingUtils.cpp" />
-    <ClCompile Include="..\src\osc\ip\win32\UdpSocket.cpp" />
-    <ClCompile Include="..\src\osc\OscBundle.cpp" />
-    <ClCompile Include="..\src\osc\OscListener.cpp" />
-    <ClCompile Include="..\src\osc\OscMessage.cpp" />
-    <ClCompile Include="..\src\osc\OscSender.cpp" />
-    <ClCompile Include="..\src\osc\osc\OscOutboundPacketStream.cpp" />
-    <ClCompile Include="..\src\osc\osc\OscPrintReceivedElements.cpp" />
-    <ClCompile Include="..\src\osc\osc\OscReceivedElements.cpp" />
-    <ClCompile Include="..\src\osc\osc\OscTypes.cpp" />
     <ClCompile Include="..\src\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_Debug_Info|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\src\ds\storage\directory_watcher.cpp" />
     <ClCompile Include="..\src\ds\storage\directory_watcher_win32.cpp" />
@@ -392,7 +375,6 @@
     <ClCompile Include="..\src\ds\util\idle_timer.cpp" />
     <ClCompile Include="..\src\ds\util\image_meta_data.cpp" />
     <ClCompile Include="..\src\ds\util\string_util.cpp" />
-    <ClCompile Include="..\src\tuio\TuioClient.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\ds\math\extrasrc\fp_identifier_parser.inc" />
@@ -410,6 +392,12 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Debug_Info|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
@@ -422,6 +410,10 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="PropertySheets\Platform64.props" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_Debug_Info|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="PropertySheets\Platform64.props" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="PropertySheets\Platform64_d.props" />
@@ -431,13 +423,18 @@
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\lib\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_Debug_Info|x64'">..\lib\</OutDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release_Debug_Info|x64'">false</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectName)64_d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>..\lib\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <TargetName>$(ProjectName)64</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Debug_Info|x64'">
     <TargetName>$(ProjectName)64</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -479,6 +476,45 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions);NOMINMAX;_CRT_SECURE_NO_WARNINGS;D_SCL_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateMapFile>false</GenerateMapFile>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>
+      </EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <IgnoreSpecificDefaultLibraries>LIBCMT</IgnoreSpecificDefaultLibraries>
+    </Link>
+    <CustomBuildStep>
+      <Message>Copying Pango resources to output directory</Message>
+      <Command>echo Copying Pango resources files to Configuration folder
+		if not exist "$(SolutionDir)\$(Configuration)" mkdir "$(SolutionDir)\$(Configuration)"
+		xcopy /y /d /s "$(DS_PLATFORM_090)\lib\gtk\runtime64" "$(SolutionDir)\$(Configuration)"
+		</Command>
+      <Inputs>$(DS_PLATFORM_090)\lib\gtk\runtime64\libpango-1.0-0.dll</Inputs>
+      <Outputs>$(SolutionDir)\$(Configuration)\libpango-1.0-0.dll</Outputs>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Debug_Info|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions);NOMINMAX;_CRT_SECURE_NO_WARNINGS;D_SCL_SECURE_NO_WARNINGS</PreprocessorDefinitions>

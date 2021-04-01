@@ -231,13 +231,16 @@ void WebInterface::startAuthCallback(const std::string& host, const std::string&
 	innerLayout->mLayoutLPad = padding * 2.0f;
 	mAuthLayout->addChildPtr(innerLayout);
 
-	auto authLabel = mEngine.getEngineCfg().getText("viewer:widget").create(mEngine, innerLayout);
+	auto authLabel = new ds::ui::Text(mEngine);
+	innerLayout->addChildPtr(authLabel);
+	authLabel->setTextStyle("viewer:widget");
 	std::stringstream ss;
 	ss << realm << " - "  << host;
 	authLabel->setText(ss.str());
 
-
-	auto userLabel = mEngine.getEngineCfg().getText("viewer:widget").create(mEngine, innerLayout);
+	auto userLabel = new ds::ui::Text(mEngine);
+	innerLayout->addChildPtr(userLabel);
+	userLabel->setTextStyle("viewer:widget");
 	userLabel->setFontSize(userLabel->getFontSize() * 0.66667f);
 	userLabel->setText("Username");
 	userLabel->mLayoutTPad = padding;
@@ -245,13 +248,15 @@ void WebInterface::startAuthCallback(const std::string& host, const std::string&
 	ds::ui::EntryFieldSettings efs;
 	efs.mTextConfig = "viewer:widget";
 	efs.mFieldSize.x = getWidth();
-	efs.mFieldSize.y = mEngine.getEngineCfg().getText("viewer:widget").mSize * 1.25f;
+	efs.mFieldSize.y = mEngine.getTextStyle("viewer:widget").mSize * 1.25;
 	efs.mCursorSize.y = efs.mFieldSize.y;
 	mUserField = new ds::ui::EntryField(mEngine, efs);
 	mUserField->focus();
 	innerLayout->addChildPtr(mUserField);
 
-	auto passLabel = mEngine.getEngineCfg().getText("viewer:widget").create(mEngine, innerLayout);
+	auto passLabel = new ds::ui::Text(mEngine);
+	innerLayout->addChildPtr(passLabel);
+	passLabel->setTextStyle("viewer:widget");
 	passLabel->setFontSize(passLabel->getFontSize() * 0.66667f);
 	passLabel->setText("Password");
 	passLabel->mLayoutTPad = padding;
@@ -263,9 +268,10 @@ void WebInterface::startAuthCallback(const std::string& host, const std::string&
 	mPasswordField->unfocus();
 	innerLayout->addChildPtr(mPasswordField);
 
-
-	auto cancelButton = mEngine.getEngineCfg().getText("viewer:widget").create(mEngine, innerLayout);
-	cancelButton->setFontSize(cancelButton->getFontSize());
+	auto cancelButton = new ds::ui::Text(mEngine);
+	innerLayout->addChildPtr(cancelButton);
+	cancelButton->setTextStyle("viewer:widget");
+	cancelButton->setFontSize(cancelButton->getFontSize()); //?????
 	cancelButton->setText("Cancel");
 	cancelButton->mLayoutTPad = padding;
 	cancelButton->enable(true);

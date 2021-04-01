@@ -390,6 +390,15 @@ Sprite* TouchManager::getSpriteForFinger( const int fingerId ){
 	return mFingerDispatcher[fingerId];
 }
 
+
+void TouchManager::clearFingersForSprite(ui::Sprite* theSprite) {
+	for (auto& it : mFingerDispatcher) {
+		if(it.second == theSprite){
+			it.second = nullptr;
+		}
+	}
+}
+
 Sprite* TouchManager::getHit(const ci::vec3 &point) {
 	return mEngine.getHit(point);
 }

@@ -1,6 +1,4 @@
 #pragma once
-#ifndef DS_UI_SOFT_KEYBOARD_ENTRY_FIELD
-#define DS_UI_SOFT_KEYBOARD_ENTRY_FIELD
 
 #include <ds/ui/sprite/sprite.h>
 #include <ds/ui/sprite/text.h>
@@ -28,6 +26,8 @@ public:
 		, mTextOffset(0.0f, 0.0f)
 		, mPasswordMode(false)
 		, mSearchMode(false)
+		, mAutoResize(false)
+		, mAutoExpand(false)
 	{}
 
 	std::string mTextConfig;
@@ -38,6 +38,8 @@ public:
 	ci::vec2	mCursorOffset; 
 	bool		mPasswordMode; // characters show as stars
 	bool		mSearchMode; // enter key sends a text updated callback but doesn't insert text
+	bool		mAutoResize; // if the entry field resizes, sets the size of the TextSprite resize limits as well, default off
+	bool		mAutoExpand; // resizes the entry field to the height of the entered text. disables Auto Resize, default off
 	float		mBlinkRate;
 	float		mAnimationRate;
 };
@@ -116,6 +118,12 @@ public:
 	/// Set the index of the cursor. Will bounds check the cursor
 	void								setCursorIndex(const size_t index);
 
+	/// Sets the position of the cursor based on the given global position
+	void								setCursorPosition(const ci::vec3& globalPos);
+
+	/// Gets the position of the cursor in global space
+	const ci::vec3						getCursorPosition();
+
 protected:
 
 	/// Override to know when this field gains focus.
@@ -161,4 +169,3 @@ protected:
 } // namespace ui
 } // namespace ds
 
-#endif

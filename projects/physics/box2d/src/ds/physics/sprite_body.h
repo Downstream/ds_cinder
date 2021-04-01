@@ -1,6 +1,4 @@
 #pragma once
-#ifndef DS_PHYSICS_SPRITEBODY_H_
-#define DS_PHYSICS_SPRITEBODY_H_
 
 #include <vector>
 #include <functional>
@@ -121,6 +119,9 @@ public:
 	//Get scale of physics world.  Needed for realtime update of joint parameters.  
 	//Could wrap the joints, and do this internally, but will be left for a later exercise
 	float 					getPhysWorldScale();
+
+	// Runs the world ahead this many iterations (updates)
+	void					runWorldAhead(const int iterations);
 private:
 	friend class BodyBuilder;
 	friend class BodyBuilderBox;
@@ -136,5 +137,3 @@ private:
 
 } // namespace physics
 } // namespace ds
-
-#endif // DS_PHYSICS_SPRITEBODY_H_

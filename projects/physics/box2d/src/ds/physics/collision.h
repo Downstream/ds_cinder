@@ -1,6 +1,4 @@
 #pragma once
-#ifndef DS_PHYSICS_COLLISION_H_
-#define DS_PHYSICS_COLLISION_H_
 
 #include <ds/app/app_defs.h>
 
@@ -41,4 +39,3 @@ public:
 } // namespace physics
 } // namespace ds
 
-#endif // DS_PHYSICS_COLLISION_H_

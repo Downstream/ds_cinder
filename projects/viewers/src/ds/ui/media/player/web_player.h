@@ -60,6 +60,7 @@ class WebPlayer : public ds::ui::Sprite {
 	bool mAllowTouchToggle;
 	bool mStartInteractable;
 	bool mInterfaceBelowMedia;
+	float mInterfaceBottomPad = 50.0f;
 	bool mNativeTouches;
 	bool mAutoStart;
 };

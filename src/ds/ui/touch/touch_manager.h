@@ -55,6 +55,8 @@ public:
 	void									setSpriteForFinger(const int fingerId, ui::Sprite* theSprite);
 	Sprite*									getSpriteForFinger(const int fingerId);
 
+	void									clearFingersForSprite(ui::Sprite* theSprite);
+
 	void									setOverrideTranslation(const bool doOverride){ mOverrideTranslation = doOverride; }
 	void									setOverrideDimensions(const ci::vec2& dimensions){ mTouchDimensions = dimensions; }
 	void									setOverrideOffset(const ci::vec2& offset){ mTouchOffset = offset; }

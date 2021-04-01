@@ -31,6 +31,11 @@ public:
 
 	typedef enum { kShrinkNone = 0, kShrinkWidth, kShrinkHeight, kShrinkBoth } ShrinkType;
 
+	/// AspectDefault = fixed aspect is based on the layout. 
+	/// AspectFill = fixed aspect will always try to fill the target rect. This may result in overflow, so you may want to clip
+	/// AspectLetterbox = fixed aspect will letterbox the sprite. 
+	typedef enum { kAspectDefault = 0, kAspectFill, kAspectLetterbox } AspectMode;
+
 	/// In VFlow layouts, adjusts the x-position during layout
 	enum { kLeft = 0, kCenter, kRight } HAlignment;
 	/// In HFlow layouts, adjusts the y-position during layout

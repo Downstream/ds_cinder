@@ -478,20 +478,20 @@ float SpriteAnimatable::runReversibleAnimationScript(const std::string& animScri
 
 		// Parse out the special commands
 		std::string keyey = commandProperties.front();
-		if (keyey == "ease"){
-			std::string easeString = commandProperties[1];
-			easing = getEasingByString(easeString);
-			continue;
-		}
-		else if (keyey == "duration"){
-			ds::string_to_value<float>(commandProperties[1], dur);
-			continue;
-		}
-		else if (keyey == "delay"){
-			float rootDelay = 0.0f;
-			ds::string_to_value<float>(commandProperties[1], rootDelay);
-			delayey += rootDelay;
-			continue;
+		if (commandProperties.size() > 1) {
+			if (keyey == "ease") {
+				std::string easeString = commandProperties[1];
+				easing = getEasingByString(easeString);
+				continue;
+			} else if (keyey == "duration") {
+				ds::string_to_value<float>(commandProperties[1], dur);
+				continue;
+			} else if (keyey == "delay") {
+				float rootDelay = 0.0f;
+				ds::string_to_value<float>(commandProperties[1], rootDelay);
+				delayey += rootDelay;
+				continue;
+			}
 		}
 
 		// parse the destination vectors to floats

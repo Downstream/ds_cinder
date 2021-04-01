@@ -101,6 +101,7 @@ class VideoPlayer : public ds::ui::Sprite {
 	std::vector<GstAudioDevice> mAudioDevices;
 	bool						mLooping;
 	bool						mInterfaceBelowMedia;
+	float						mInterfaceBottomPad = 50.0f;
 	bool						mGlMode = false;
 	bool						mNVDecode = false;
 };

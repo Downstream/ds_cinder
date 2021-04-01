@@ -167,11 +167,11 @@ void PanoramicVideoPlayer::layout() {
 
 	if(mVideoInterface && mEmbedInterface) {
 		mVideoInterface->setSize(getWidth() / 2.0f, mVideoInterface->getHeight());
-		float yPos = getHeight() - mVideoInterface->getHeight() - 50.0f;
+		float yPos = getHeight() - mVideoInterface->getScaleHeight() - mInterfaceBottomPad;
 		if(yPos < getHeight() / 2.0f) yPos = getHeight() / 2.0f;
-		if(yPos + mVideoInterface->getHeight() > getHeight()) yPos = getHeight() - mVideoInterface->getHeight();
+		if(yPos + mVideoInterface->getScaleHeight() > getHeight()) yPos = getHeight() - mVideoInterface->getScaleHeight();
 		if(mInterfaceBelowMedia) yPos = getHeight();
-		mVideoInterface->setPosition(getWidth() / 2.0f - mVideoInterface->getWidth() / 2.0f, yPos);
+		mVideoInterface->setPosition(getWidth() / 2.0f - mVideoInterface->getScaleWidth() / 2.0f, yPos);
 	}
 }
 
@@ -251,6 +251,7 @@ void PanoramicVideoPlayer::setMediaViewerSettings(MediaViewerSettings& settings)
 	setShowInterfaceAtStart(settings.mShowInterfaceAtStart);
 	setAudioDevices(settings.mVideoAudioDevices);
 	mInterfaceBelowMedia = settings.mInterfaceBelowMedia;
+	mInterfaceBottomPad = settings.mInterfaceBottomPad;
 }
 
 void PanoramicVideoPlayer::setPan(const float newPan) {

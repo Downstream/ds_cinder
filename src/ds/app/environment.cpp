@@ -199,6 +199,15 @@ void Environment::loadSettings(const std::string& settingsName, const std::strin
 	}
 }
 
+bool Environment::hasSettings(const std::string& filename) {
+	if (ds::safeFileExistsCheck(ds::Environment::getAppFolder(ds::Environment::SETTINGS(), filename))) return true;
+	if (ds::safeFileExistsCheck(ds::Environment::getLocalSettingsPath(filename))) return true;
+	if (ds::safeFileExistsCheck(ds::Environment::expand("%APP%/settings/%CFG_FOLDER%/" + filename))) return true;
+	if (ds::safeFileExistsCheck(ds::Environment::expand("%LOCAL%/settings/%PP%/%CFG_FOLDER%/" + filename))) return true;
+
+	return false;
+}
+
 void Environment::saveSettings(const std::string& filename, ds::cfg::Settings& settings) {
 	if(!ds::EngineSettings::getConfigurationFolder().empty()) {
 		const std::string		local = ds::Environment::expand("%LOCAL%/settings/%PP%/%CFG_FOLDER%/" + filename);

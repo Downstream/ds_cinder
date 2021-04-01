@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<settings>
+	<setting name="tuio_input:number" value="0" type="int" comment=" TUIO Setup  how many tuio touch inputs there are (physical inputs) "/>
+	
+	<setting name="tuio_input:port" value="3333" type="int" comment=" Transformations for each TUIO input "/>
+	<setting name="tuio_input:scale" value="1920, 1080" type="vec2" comment="Pixel destination size for this input" />
+	<setting name="tuio_input:offset" value="1080, 0" type="vec2" comment="Pixel offset for these inputs"/>
+	<setting name="tuio_input:rotation" value="0" type="float" comment="angle in degrees"/>
+	<setting name="tuio_input:id_offset" value="100" type="int" comment="Offset for the id to avoid collisions between inputs"/>
+	<setting name="tuio_input:filter_rect" value="0, 0, 5400, 1920" type="rect" comment="Reject touches outside this rectangle in world space" />
+	
+</settings>
+
+

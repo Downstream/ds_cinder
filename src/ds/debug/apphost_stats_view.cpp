@@ -126,7 +126,7 @@ void AppHostStatsView::setToAskToConfirm(const std::string str, const std::strin
 
 ds::ui::Text* AppHostStatsView::getSomeText() {
 	auto btnText = new ds::ui::Text(mEngine);
-	btnText->setFont("Arial", 11.0f);
+	btnText->setTextStyle("Arial", 11.0, ci::ColorA::white());
 	btnText->setLeading(1.2f);
 	btnText->setResizeLimit(400.0f - mPad * 2.0f);
 	btnText->mLayoutLPad = mPad;

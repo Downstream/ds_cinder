@@ -93,7 +93,7 @@ class SmartLayout : public ds::ui::LayoutSprite {
 	///  - You can use any sprite property in the first field
 	///  - The content model set here can be retrieved with getContentModel()
 	///  - After all sprites have been set, the callback for setContentUpdatedCallback() is called
-	void setContentModel(ds::model::ContentModelRef& theData);
+	virtual void setContentModel(ds::model::ContentModelRef& theData);
 
 	/// Returns the last-set ContentModelRef
 	ds::model::ContentModelRef getContentModel() { return mContentModel; }

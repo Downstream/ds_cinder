@@ -1,6 +1,4 @@
 #pragma once
-#ifndef DS_PHYSICS_SPRITEWORLD_H_
-#define DS_PHYSICS_SPRITEWORLD_H_
 
 namespace ds {
 namespace ui {
@@ -24,4 +22,3 @@ private:
 } // namespace physics
 } // namespace ds
 
-#endif // DS_PHYSICS_SPRITEWORLD_H_

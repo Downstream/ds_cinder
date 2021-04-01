@@ -2,7 +2,87 @@
 
 #include "scroll_area.h"
 #include <glm/gtx/matrix_decompose.hpp>
+#include <ds/ui/sprite/util/clip_plane.h>
 
+namespace {
+
+const std::string FadeFrag =
+"uniform sampler2D  tex0;\n"
+"uniform bool       vertical;\n"
+"uniform float      fadeSize;\n"
+"uniform float      topOpacity;\n"
+"uniform float      botOpacity;\n"
+"uniform vec2       textureSize;\n"
+"in vec2            TexCoord0;"
+"in vec4            Color;"
+"out vec4           oColor;"
+
+"void main()\n"
+"{\n"
+
+"	oColor = texture2D( tex0, TexCoord0 );"
+"	oColor *= Color;"
+
+"	if(fadeSize > 0){"
+"		float yPos = TexCoord0.y * textureSize.y;"
+"		float xPos = TexCoord0.x * textureSize.x;"
+"		float fadeAmount = 1.0;"
+"		if(vertical){"
+"			float theTop = textureSize.y - fadeSize;"
+"			float theBot = fadeSize;"
+"			if(yPos > theTop && topOpacity > 0.0){"
+"				float yPercent = (yPos - theTop)/ fadeSize;"
+"				fadeAmount = smoothstep(1.0, 1.0 - topOpacity, yPercent);"
+"			} else if(yPos < theBot && botOpacity > 0.0){"
+"				float yPercent = (theBot - yPos)/ fadeSize;"
+"				fadeAmount = smoothstep(1.0, 1.0 - botOpacity, yPercent);"
+"			}"
+"		} else {"
+"			float theTop = textureSize.x - fadeSize;"
+"			float theBot = fadeSize;"
+"			if(xPos > theTop && botOpacity > 0.0){"
+"				float yPercent = (xPos - theTop)/ fadeSize;"
+"				fadeAmount = smoothstep(1.0,  1.0 - botOpacity, yPercent);"
+"			} else if(xPos < theBot && topOpacity > 0.0){"
+"				float yPercent = (theBot - xPos)/ fadeSize;"
+"				fadeAmount = smoothstep(1.0, 1.0 - topOpacity, yPercent);"
+"			}"
+"		}"
+
+"		oColor.r *= fadeAmount;"
+"		oColor.g *= fadeAmount;"
+"		oColor.b *= fadeAmount;"
+"		oColor.a *= fadeAmount;"
+
+"	}"
+
+"}\n";
+
+const std::string FadeVert =
+"#version 150\n"
+"uniform mat4       ciModelMatrix;\n"
+"uniform mat4       ciModelViewProjection;\n"
+"uniform vec4       uClipPlane0;\n"
+"uniform vec4       uClipPlane1;\n"
+"uniform vec4       uClipPlane2;\n"
+"uniform vec4       uClipPlane3;\n"
+"in vec4            ciPosition;\n"
+"in vec2            ciTexCoord0;\n"
+"in vec4            ciColor;\n"
+"out vec2           TexCoord0;\n"
+"out vec4           Color;\n"
+"void main()\n"
+"{\n"
+"    gl_Position = ciModelViewProjection * ciPosition;\n"
+"    TexCoord0 = ciTexCoord0;\n"
+"    Color = ciColor;\n"
+"    gl_ClipDistance[0] = dot(ciModelMatrix * ciPosition, uClipPlane0);\n"
+"    gl_ClipDistance[1] = dot(ciModelMatrix * ciPosition, uClipPlane1);\n"
+"    gl_ClipDistance[2] = dot(ciModelMatrix * ciPosition, uClipPlane2);\n"
+"    gl_ClipDistance[3] = dot(ciModelMatrix * ciPosition, uClipPlane3);\n"
+"}\n";
+
+}
 
 namespace ds{
 namespace ui{
@@ -10,6 +90,7 @@ namespace ui{
 ScrollArea::ScrollArea(ds::ui::SpriteEngine& engine, const float startWidth, const float startHeight, const bool vertical)
 	: Sprite(engine)
 	, mSpriteMomentum(engine)
+	, mAllowMomentum(true)
 	, mScroller(nullptr)
 	, mScrollable(false)
 	, mReturnAnimateTime(0.3f)
@@ -18,6 +99,7 @@ ScrollArea::ScrollArea(ds::ui::SpriteEngine& engine, const float startWidth, con
 	, mBottomFade(nullptr)
 	, mTopFadeActive(false)
 	, mBottomFadeActive(false)
+	, mShaderFade(false)
 	, mFadeHeight(30.0f)
 	, mFadeFullColor(0, 0, 0, 255)
 	, mFadeTransColor(0, 0, 0, 0)
@@ -28,6 +110,8 @@ ScrollArea::ScrollArea(ds::ui::SpriteEngine& engine, const float startWidth, con
 	, mScrollPercent(0.0f)
 	, mHandleRotatedTouches(false)
 {
+
+	mReturnAnimateTime = mEngine.getAnimDur();
 
 	setSize(startWidth, startHeight);
 	mSpriteMomentum.setMass(8.0f);
@@ -40,8 +124,6 @@ ScrollArea::ScrollArea(ds::ui::SpriteEngine& engine, const float startWidth, con
 	mScroller = new Sprite(mEngine);
 	if(mScroller){
 		mScroller->mExportWithXml = false;
-// 		mScroller->setTransparent(false);
-// 		mScroller->setColor(ci::Color(0.1f, 0.56f, 0.3f));
 		mScroller->setSize(startWidth, startHeight);
 		mScroller->enable(true);
 		mScroller->enableMultiTouch(ds::ui::MULTITOUCH_INFO_ONLY);
@@ -116,7 +198,7 @@ Sprite* ScrollArea::getSpriteToPassTo(){
 	return mScroller;
 }
 
-void ScrollArea::checkBounds(){
+void ScrollArea::checkBounds(const bool immediate){
 	if(!mScroller) return;
 	bool doTween = true;
 	ci::vec3 tweenDestination = mScroller->getPosition();
@@ -182,14 +264,22 @@ void ScrollArea::checkBounds(){
 	}
 
 	if(doTween){
-		// respond after a delay, in case this call is cancelled in a swipe callback
-		mWillSnapAfterDelay = true;
-		callAfterDelay([this, doTween, tweenDestination](){
-			mWillSnapAfterDelay = false;
+		if (immediate) {
 			mSpriteMomentum.deactivate();
-			mScroller->tweenPosition(tweenDestination, mReturnAnimateTime, 0.0f, ci::EaseOutQuint(), [this](){ tweenComplete(); }, [this](){ scrollerTweenUpdated(); });
+			mScroller->setPosition(tweenDestination);
 			scrollerUpdated(ci::vec2(tweenDestination));
-		}, 0.0f);
+
+		} else {
+			// respond after a delay, in case this call is cancelled in a swipe callback
+			mWillSnapAfterDelay = true;
+			callAfterDelay([this, doTween, tweenDestination]() {
+				mWillSnapAfterDelay = false;
+				mSpriteMomentum.deactivate();
+				mScroller->tweenPosition(tweenDestination, mReturnAnimateTime, 0.0f, ci::EaseOutQuint(), [this]() {
+					tweenComplete(); }, [this]() { scrollerTweenUpdated(); });
+				scrollerUpdated(ci::vec2(tweenDestination));
+			}, 0.0f);
+		}
 	} else {
 		// nothing special to do here
 		mScroller->animStop();
@@ -217,7 +307,7 @@ void ScrollArea::handleScrollTouch(ds::ui::Sprite* bs, const ds::ui::TouchInfo& 
 	if(ti.mPhase == ds::ui::TouchInfo::Added){
 		mSpriteMomentum.deactivate();
 	} else if(ti.mPhase == ds::ui::TouchInfo::Removed && ti.mNumberFingers == 0){
-		mSpriteMomentum.activate();
+		if(mAllowMomentum) mSpriteMomentum.activate();
 		checkBounds();
 	} else if(ti.mPhase == ds::ui::TouchInfo::Moved && ti.mNumberFingers > 0){
 		auto deltaPoint = ti.mDeltaPoint;
@@ -261,6 +351,57 @@ bool ScrollArea::callSnapToPositionCallback(bool& doTween, ci::vec3& tweenDestin
 	return output;
 }
 
+void ScrollArea::drawClient(const ci::mat4 &transformMatrix, const ds::DrawParams &drawParams) {
+	if (!mShaderFade) {
+		ds::ui::Sprite::drawClient(transformMatrix, drawParams);
+		return;
+	}
+
+	forEachChild([this](auto& spr) {
+		spr.setBlendMode(ds::ui::FBO_IN);
+	}, true);
+
+	buildTransform();
+	ci::mat4 preTrans = mTransformation;
+	mTransformation = ci::mat4();
+	ds::DrawParams dp;
+	dp.mParentOpacity = drawParams.mParentOpacity;
+	dp.mClippingParent = this;
+
+	ds::ui::Sprite::drawClient(ci::mat4(), dp);
+
+	mTransformation = preTrans;
+
+	auto sourceTexture = getFinalOutTexture();
+
+	if (!sourceTexture) return;
+
+	ci::mat4 totalTransformation = transformMatrix * mTransformation;
+	ci::gl::pushModelMatrix();
+	ci::gl::multModelMatrix(totalTransformation);
+
+	if (mShaderShader) {
+		mShaderShader->bind();
+		mShaderShader->uniform("textureSize", ci::vec2((float)sourceTexture->getWidth(), (float)sourceTexture->getHeight()));
+		mShaderShader->uniform("fadeSize", mFadeHeight);
+		mShaderShader->uniform("vertical", mVertical);
+
+		if (mTopFade) {
+			mShaderShader->uniform("topOpacity", mTopFade->getOpacity());
+		}
+
+		if (mBottomFade) {
+			mShaderShader->uniform("botOpacity", mBottomFade->getOpacity());
+		}
+	}
+
+	ds::ui::applyBlendingMode(ds::ui::FBO_OUT);
+	ci::gl::color(1.0f, 1.0f, 1.0f, mDrawOpacity);
+	ci::gl::ScopedTextureBind scopedTexture(sourceTexture);
+	ci::gl::drawSolidRect(ci::Rectf(0.0f, 0.0f, (float)sourceTexture->getWidth(), (float)sourceTexture->getHeight()));
+
+	ci::gl::popModelMatrix();
+}
 void ScrollArea::setUseFades(const bool doFading){
 	if(doFading){
 		float fadeWiddy = getWidth();
@@ -298,12 +439,12 @@ void ScrollArea::setUseFades(const bool doFading){
 		setScrollSize(getWidth(), getHeight());
 	} else {
 		if(mTopFade){
-			mTopFade->remove();
+			mTopFade->release();
 			mTopFade = nullptr;
 		}
 
 		if(mBottomFade){
-			mBottomFade->remove();
+			mBottomFade->release();
 			mBottomFade = nullptr;
 		}
 	}
@@ -328,6 +469,40 @@ void ScrollArea::setFadeHeight(const float fadeHeight){
 	}
 
 	onSizeChanged();
+}
+
+void ScrollArea::setUseShaderFade(const bool shaderFade) {
+	mShaderFade = shaderFade;
+	if(mShaderFade){
+		if(!mTopFade || !mBottomFade){
+			setUseFades(true);
+		}
+		if (mTopFade && mBottomFade) {
+			mTopFade->hide();
+			mBottomFade->hide();
+		}
+		setBlendMode(ds::ui::FBO_IN);
+
+		ci::gl::Fbo::Format  format;
+		format.setSamples(8);
+		setFinalRenderToTexture(true, format);
+
+		if(!mShaderShader){
+			try {
+				mShaderShader = ci::gl::GlslProg::create(FadeVert.c_str(), FadeFrag.c_str());
+			} catch (std::exception&){
+				DS_LOG_WARNING("Couldn't load scroll fade shader! ");
+			}
+		}
+		
+	} else {
+		if (mTopFade && mBottomFade) {
+			mTopFade->show();
+			mBottomFade->show();
+		}
+		setBlendMode(ds::ui::NORMAL);
+		setFinalRenderToTexture(false);		
+	}
 }
 
 void ScrollArea::recalculateSizes() {

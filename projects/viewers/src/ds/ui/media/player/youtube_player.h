@@ -118,6 +118,7 @@ protected:
 	bool mAllowTouchToggle;
 	bool mStartInteractable;
 	bool mInterfaceBelowMedia;
+	float mInterfaceBottomPad = 50.0f;
 	bool mNativeTouches;
 	bool mAutoStart;
 	float mVolume;

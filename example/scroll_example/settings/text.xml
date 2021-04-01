@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<settings>
-	<setting name="sample:config:name" value="sample-light" type="string" comment=" Font names are installed in the root app class on startup	 Sample Text "/>
-	<setting name="sample:config:size" value="16" type="float"/>
-	<setting name="sample:config:leading" value="0.75" type="float"/>
-	<setting name="sample:config:color" value="#ffffffff" type="color"/>
-</settings>
-

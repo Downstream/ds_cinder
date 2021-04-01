@@ -9,11 +9,14 @@
 #include "ds/app/engine/engine_stats_view.h"
 #include "ds/cfg/settings.h"
 #include "ds/cfg/settings_editor.h"
+#include "ds/ui/touch/tuio_input.h"
+
 #ifdef _WIN32
 #include <Winuser.h>
 #include <VersionHelpers.h>
 #include "ds/debug/console.h"
 #endif
+
 #include "ds/debug/debug_defines.h"
 #include "ds/debug/logger.h"
 #include "ds/math/math_defs.h"
@@ -24,6 +27,7 @@
 
 #include <cinder/Display.h>
 #include <boost/algorithm/string.hpp>
+#include <cinder/tuio/Tuio.h>
 
 #include "engine_events.h"
 
@@ -82,17 +86,11 @@ Engine::Engine(ds::App& app, ds::EngineSettings &settings,
 	, mCachedWindowW(0)
 	, mCachedWindowH(0)
 	, mAverageFps(0.0f)
-	, mTuio(nullptr)
-	, mTuioPort(0)
-	, mTuioBeganRegistrationId(0)
-	, mTuioMovedRegistrationId(0)
-	, mTuioEndedRegistrationId(0)
-	, mTuioRegistered(false)
+	, mTuioInput(std::make_shared<ds::ui::TuioInput>(*this, mTuioPort, ci::vec2(1), ci::vec2(0), 0.0f, 0, ci::Rectf(ci::vec2(0), ci::vec2(0))))
 	, mFonts(*this)
 	, mEventClient(ed.mNotifier, [this](const ds::Event *m){ if(m) onAppEvent(*m); })
 	, mAutoRefresh(*this)
 {
-
 
 	ds::event::Registry::get().addEventCreator(ds::app::RequestAppExitEvent::NAME(), [this]()->ds::Event* {return new ds::app::RequestAppExitEvent(); });
 	ds::event::Registry::get().addEventCreator(ds::app::IdleEndedEvent::NAME(), [this]()->ds::Event* {return new ds::app::IdleEndedEvent(); });
@@ -107,8 +105,6 @@ Engine::Engine(ds::App& app, ds::EngineSettings &settings,
 }
 
 Engine::~Engine() {
-	if (mTuio) mTuio->disconnect();
-
 	// Important to do this here before the auto update list is destructed.
 	// so any autoupdate services get removed.
 	mData.clearServices();
@@ -151,19 +147,80 @@ void Engine::setupSrcDstRects(){
 	// Src rect and dst rect are new, and should obsolete local_rect. For now, default to illegal values,
 	// which makes them get ignored and default to the main display
 
-	mData.mSrcRect = mSettings.getRect("src_rect");
-	mData.mDstRect = mSettings.getRect("dst_rect");
+	auto screenMode = mSettings.getString("screen:mode");
+	ds::to_lowercase(screenMode);
+	bool isFullscreen = screenMode.find("full") != std::string::npos;
 
-	if(mData.mDstRect.getWidth() < 1 || mData.mDstRect.getHeight() < 1){
-		DS_LOG_WARNING("Screen rect is 0 width or height. Overriding to full screen size");
+	auto autoSizeMode = mSettings.getString("screen:auto_size");
+	ds::to_lowercase(autoSizeMode);
+
+	if(autoSizeMode == "all_span"){
+		mSettings.getSetting("span_all_displays", 0).mRawValue = "true";
+		return;
+	} else if (autoSizeMode == "main_span" || autoSizeMode == "letterbox") {
 		ci::DisplayRef mainDisplay = ci::Display::getMainDisplay();
-		ci::Rectf mainDisplayRect = ci::Rectf(0.0f, 0.0f, (float)mainDisplay->getWidth(), (float)mainDisplay->getHeight());
-		mData.mSrcRect = mainDisplayRect;
-		mData.mDstRect = mainDisplayRect;
-		if(mData.mWorldSize.x < 1 || mData.mWorldSize.y < 1){
+		const ci::Rectf mainDisplayRect = ci::Rectf(0.0f, 0.0f, (float)mainDisplay->getWidth(), (float)mainDisplay->getHeight());
+		ci::Rectf newSrcRect = mainDisplayRect;
+		ci::Rectf newDstRect = mainDisplayRect;
+
+		if (autoSizeMode == "letterbox"
+			&& (mainDisplayRect.getWidth() != mData.mWorldSize.x|| mainDisplayRect.getHeight() != mData.mWorldSize.y)
+			&& mData.mWorldSize.x > 0 && mData.mWorldSize.y > 0
+			) {
+
+			// a = w / h
+			// w = ah
+			// h = w / a
+			float mainDispAsp = mainDisplayRect.getWidth() / mainDisplayRect.getHeight();
+			float worldAsp = mData.mWorldSize.x / mData.mWorldSize.y;
+			newSrcRect = ci::Rectf(0.0f, 0.0f, mData.mWorldSize.x, mData.mWorldSize.y);
+			
+			// same aspect ratio: scale to fill the screen
+			if (mainDispAsp == worldAsp) {
+				newDstRect = mainDisplayRect;
+
+			// pillarbox
+			} else if (mainDispAsp > worldAsp) {
+				float newW = mainDisplayRect.getHeight() * worldAsp;
+				newDstRect = ci::Rectf(mainDisplayRect.getWidth() / 2.0f - newW / 2.0f, 0.0f, mainDisplayRect.getWidth() / 2.0f + newW / 2.0f, mainDisplayRect.getHeight());
+
+			// letterbox
+			} else {
+				float newH = mainDisplayRect.getWidth() / worldAsp;
+				newDstRect = ci::Rectf(0.0f, mainDisplayRect.getHeight() / 2.0f - newH / 2.0f, mainDisplayRect.getWidth(), mainDisplayRect.getHeight() / 2.0f + newH / 2.0f);
+
+			}
+		} 
+
+		/// avoid windows' dumb auto-fullscreen thing
+		if (!isFullscreen && newDstRect.getWidth() == mainDisplayRect.getWidth() && newDstRect.getHeight() == mainDisplayRect.getHeight()) {
+				
+			newSrcRect.x2 += 1;
+			newDstRect.x2 += 1;
+		}
+
+		mData.mSrcRect = newSrcRect;
+		mData.mDstRect = newDstRect;
+		if (mData.mWorldSize.x < 1 || mData.mWorldSize.y < 1) {
 			mData.mWorldSize = ci::vec2(mainDisplayRect.getWidth(), mainDisplayRect.getHeight());
 		}
+	} else {
+		mData.mSrcRect = mSettings.getRect("src_rect");
+		mData.mDstRect = mSettings.getRect("dst_rect");
+
+		if (mData.mDstRect.getWidth() < 1 || mData.mDstRect.getHeight() < 1) {
+			DS_LOG_WARNING("Screen rect is 0 width or height. Overriding to full screen size");
+			ci::DisplayRef mainDisplay = ci::Display::getMainDisplay();
+			ci::Rectf mainDisplayRect = ci::Rectf(0.0f, 0.0f, (float)mainDisplay->getWidth(), (float)mainDisplay->getHeight());
+			mData.mSrcRect = mainDisplayRect;
+			mData.mDstRect = mainDisplayRect;
+			if (mData.mWorldSize.x < 1 || mData.mWorldSize.y < 1) {
+				mData.mWorldSize = ci::vec2(mainDisplayRect.getWidth(), mainDisplayRect.getHeight());
+			}
+		}
 	}
+
+	
 	ci::app::getWindow()->setPos(mData.mDstRect.getUpperLeft());
 	ci::app::getWindow()->setSize(mData.mDstRect.getSize());
 
@@ -491,7 +548,6 @@ bool Engine::isShowingSettingsEditor(){
 void Engine::setup(ds::App& app) {
 
 	mCinderWindow = app.getWindow();
-	//mCinderWindow->spanAllDisplays
 
 	mTouchTranslator.setTranslation(mData.mSrcRect.x1, mData.mSrcRect.y1);
 	mTouchTranslator.setScale(mData.mSrcRect.getWidth() / ci::app::getWindowWidth(), mData.mSrcRect.getHeight() / ci::app::getWindowHeight());
@@ -564,8 +620,6 @@ void Engine::setupTouch(ds::App& app) {
 
 	mTouchMode = ds::ui::TouchMode::fromSettings(mSettings);
 	setTouchMode(mTouchMode);
-	int oldTuioPort = mTuioPort;
-	mTuioPort = mSettings.getInt("touch:tuio:port");
 	// don't lose idle just because we got a marker moved event
 	mTuioObjectsMoved.setAutoIdleReset(false);
 	if (ds::ui::TouchMode::hasTuio(mTouchMode)) {
@@ -584,10 +638,11 @@ void Engine::setupTouch(ds::App& app) {
 		const ci::vec2  touchOffset = theSettings.getVec2("tuio_input:offset", i, ci::vec2());
 		const float     touchRotation = theSettings.getFloat("tuio_input:rotation", i, 0.0f);
 		const ci::Rectf filterRect = theSettings.getRect("tuio_input:filter_rect", i, ci::Rectf());
-		mTuioInputs.push_back(std::make_shared<ds::ui::TuioInput>(*this, tuioPort, touchScale, touchOffset, touchRotation,
-														  idOffset, filterRect));
+		auto tuioInput = std::make_shared<ds::ui::TuioInput>(*this, tuioPort, touchScale, touchOffset, touchRotation,
+			idOffset, filterRect);
+		tuioInput->start(true);
+		mTuioInputs.push_back(tuioInput);
 	}
-
 
 #ifdef _WIN32
 	if(mDsApp.getWindow()) {
@@ -626,42 +681,16 @@ void Engine::setupTouch(ds::App& app) {
 
 void Engine::startTuio(ds::App& app) {
 	mTuioObjectsMoved.setAutoIdleReset(false);
-	if (!mTuio) mTuio = new ci::tuio::Client();
 
-	if (!mTuioRegistered) {
-		mTuioBeganRegistrationId = mTuio->registerTouchesBegan(&app, &ds::App::touchesBegan);
-		mTuioMovedRegistrationId = mTuio->registerTouchesMoved(&app, &ds::App::touchesMoved);
-		mTuioEndedRegistrationId = mTuio->registerTouchesEnded(&app, &ds::App::touchesEnded);
-		mTuioRegistered = true;
-
-		registerForTuioObjects(*mTuio);
-	}
-
-	if (!mTuio->isConnected()){
-		try {
-			mTuio->connect(mTuioPort);
-			DS_LOG_INFO("TUIO Connected on port " << mTuioPort);
-		} catch (std::exception ex) {
-			DS_LOG_WARNING("TUIO client could not be started on port " << mTuioPort << ". The most common cause is that the port is already bound by another app.");
-		}
+	mTuioPort = mSettings.getInt("touch:tuio:port");
+	mTuioInput->start(false, mTuioPort);
+	if (auto tuioReceiver = mTuioInput->getReceiver()) {
+		registerForTuioObjects(tuioReceiver);
 	}
 }
 
 void Engine::stopTuio() {
-	if (mTuioRegistered && mTuio) {
-		mTuio->unregisterTouchesBegan(mTuioBeganRegistrationId);
-		mTuio->unregisterTouchesMoved(mTuioMovedRegistrationId);
-		mTuio->unregisterTouchesEnded(mTuioEndedRegistrationId);
-		mTuioRegistered = false;
-		try {
-			mTuio->disconnect();
-			delete mTuio;
-			mTuio = nullptr;
-		} catch (std::exception e) {
-			DS_LOG_WARNING("TUIO could not disconnect" << e.what());
-		}
-		DS_LOG_INFO("TUIO disconnected");
-	}
+	mTuioInput->stop();
 }
 
 void Engine::clearRoots(){
@@ -1001,11 +1030,21 @@ void Engine::clearAllSprites(const bool clearDebug) {
 	}
 }
 
-void Engine::registerForTuioObjects(ci::tuio::Client& client) {
+void Engine::registerForTuioObjects(std::shared_ptr<ci::tuio::Receiver> tuioReceiver) {
 	if (mSettings.getBool("touch:tuio:receive_objects", 0, false)) {
-		client.registerObjectAdded([this](ci::tuio::Object o) { this->mTuioObjectsBegin.incoming(TuioObject(o.getFiducialId(), o.getPos(), o.getAngle())); });
-		client.registerObjectUpdated([this](ci::tuio::Object o) { this->mTuioObjectsMoved.incoming(TuioObject(o.getFiducialId(), o.getPos(), o.getAngle(), o.getSpeed(), o.getRotationSpeed())); });
-		client.registerObjectRemoved([this](ci::tuio::Object o) { this->mTuioObjectsEnded.incoming(TuioObject(o.getFiducialId(), o.getPos(), o.getAngle())); });
+		const auto makeHandler = [this] (auto& eventQueue) {
+			return [this, &eventQueue](const auto& o) {
+				eventQueue.incoming(ds::TuioObject(o.getClassId(), o.getPosition(), o.getAngle(),
+						o.getVelocity(), o.getRotationVelocity()
+				));
+			};
+		};
+
+		if (tuioReceiver) {
+			tuioReceiver->setAddedFn  <ci::tuio::Object2d>(makeHandler(mTuioObjectsBegin));
+			tuioReceiver->setUpdatedFn<ci::tuio::Object2d>(makeHandler(mTuioObjectsMoved));
+			tuioReceiver->setRemovedFn<ci::tuio::Object2d>(makeHandler(mTuioObjectsEnded));
+		}
 	}
 }
 
@@ -1090,8 +1129,11 @@ void Engine::touchesEnded(const ds::ui::TouchEvent &e) {
 	mTouchEndedEvents.incoming(mTouchTranslator.toWorldSpace(e));
 }
 
-ci::tuio::Client &Engine::getTuioClient() {
-	return *mTuio;
+std::shared_ptr<ci::tuio::Receiver>	Engine::getTuioClient(const int tuioIndex) {
+	if (tuioIndex >= 0 && tuioIndex < mTuioInputs.size())
+		return mTuioInputs[tuioIndex]->getReceiver();
+
+	return mTuioInput->getReceiver();
 }
 
 void Engine::mouseTouchBegin(const ci::app::MouseEvent &e, int id) {
@@ -1262,7 +1304,6 @@ void Engine::checkIdle() {
 }
 
 bool Engine::isIdling(){
-	checkIdle();
 	return mIdling;
 }
 

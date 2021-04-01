@@ -722,6 +722,7 @@ namespace ui {
 		int						mLayoutHAlign;
 		int						mLayoutVAlign;
 		int						mLayoutUserType;
+		int						mLayoutFixedAspectMode=0;
 		bool					mLayoutFixedAspect;
 
 		bool					mExportWithXml;
@@ -781,8 +782,8 @@ namespace ui {
 		virtual void		onBuildRenderBatch();	
 
 		/// Always access the bounds via this, which will build them if necessary
-		const ci::Rectf&	getClippingBounds();
-		void				computeClippingBounds();
+		const ci::Rectf&	getClippingBounds(ds::ui::Sprite* clippingParent = nullptr);
+		void				computeClippingBounds(ds::ui::Sprite* clippingParent = nullptr);
 
 		void				setSpriteId(const ds::sprite_id_t&);
 		/// Helper utility to set a flag

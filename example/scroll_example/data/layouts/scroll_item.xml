@@ -1,0 +1,32 @@
+<interface>
+
+	<layout name="root_layout"
+			layout_type="vert"
+			size="$_scroll_list:item_size, $_scroll_list:item_size"
+			layout_size_mode="fixed"
+			enable="true"
+		>
+			
+		<image name="icon"
+			layout_size_mode="stretch"
+			layout_h_align="center"
+			model="resource_cache:this->resourceid"
+			/>
+			
+		<text name="item_title"
+			font="item:title"
+			layout_size_mode="flex"
+			text_align="center"
+			model="text:this->title"
+			pad_all="$_ui:padding"
+			t_pad="#expr 0.25 * $_ui:padding"
+			/>						
+	
+				
+		
+	</layout>
+
+
+</interface>
+
+

@@ -98,6 +98,7 @@ protected:
 	std::vector<GstAudioDevice>					mAudioDevices;
 	bool										mLooping;
 	bool										mInterfaceBelowMedia;
+	float										mInterfaceBottomPad = 50.0f;
 };
 
 } // namespace ui

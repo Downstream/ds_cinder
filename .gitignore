@@ -19,6 +19,7 @@ lib/platform*.lib
 obj/
 Debug/
 Release/
+Release_Debug_Info/
 logs/
 
 /doc/doxygen/generated

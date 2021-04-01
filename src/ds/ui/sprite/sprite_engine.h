@@ -1,6 +1,4 @@
 #pragma once
-#ifndef DS_UI_SPRITE_SPRITEENGINE_H_
-#define DS_UI_SPRITE_SPRITEENGINE_H_
 #include <list>
 #include <unordered_map>
 #include <memory>
@@ -34,7 +32,6 @@ class MetricsService;
 
 namespace cfg {
 class Settings;
-class Text;
 }
 
 class TuioObject;
@@ -47,6 +44,7 @@ class Sprite;
 class Tweenline;
 class TouchEvent;
 struct TouchInfo;
+struct TextStyle;
 
 /**
  * \class SpriteEngine
@@ -93,9 +91,9 @@ public:
 	ds::EngineCfg&					getEngineCfg();
 	const ds::EngineCfg&			getEngineCfg() const;
 
-	/// Gets the text config for a particular name (Font name, size, color, leading) from text.xml
-	const ds::cfg::Text&			getTextCfg(const std::string& textName) const;
-
+	/// Gets the text style for a particular name (Font name, size, color, leading) from text.xml (deprecated) or styles.xml
+	const ds::ui::TextStyle&		getTextStyle(const std::string& textName) const;
+	
 	/// Returns the settings with this settings name
 	ds::cfg::Settings&				getSettings(const std::string& name) const;
 
@@ -105,7 +103,7 @@ public:
 	/// Returns the settings for app_settings.xml (convenience)
 	ds::cfg::Settings&				getAppSettings() const;
 
-	/// Returns the settings for colors.xml (convenience)
+	/// Returns the settings for colors.xml (deprecated)
 	ds::cfg::Settings&				getColorSettings() const;
 
 	/// Sprite management
@@ -176,6 +174,7 @@ public:
 	virtual bool					isIdling() = 0;
 
 	virtual void					clearFingers( const std::vector<int> &fingers );
+	virtual void					clearFingersForSprite(ui::Sprite* theSprite) {};
 	virtual void					setSpriteForFinger( const int fingerId, ui::Sprite* theSprite ) = 0;
 	virtual ui::Sprite*				getSpriteForFinger( const int fingerId ) = 0;
 
@@ -337,4 +336,3 @@ T& SpriteEngine::getService(const std::string& str) {
 
 } // namespace ds
 
-#endif // DS_APP_ENGINE_H_

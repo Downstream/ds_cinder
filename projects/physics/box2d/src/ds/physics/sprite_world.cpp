@@ -2,7 +2,7 @@
 
 #include <ds/ui/sprite/sprite.h>
 #include <ds/ui/sprite/sprite_engine.h>
-#include "private/service.h"
+#include "service.h"
 
 namespace ds {
 namespace physics {

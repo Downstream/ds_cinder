@@ -22,6 +22,7 @@ EntryField::EntryField(ds::ui::SpriteEngine& engine, EntryFieldSettings& setting
 	, mCursorIndex(0)
 {
 	mTextSprite = new ds::ui::Text(engine);
+	mTextSprite->setAllowMarkup(false);
 	addChildPtr(mTextSprite);
 
 	mCursor = new ds::ui::Sprite(engine);
@@ -47,13 +48,13 @@ EntryField::~EntryField() {
 void EntryField::setEntryFieldSettings(EntryFieldSettings& newSettings) {
 	mEntryFieldSettings = newSettings;
 
-	setSize(mEntryFieldSettings.mFieldSize.x, mEntryFieldSettings.mFieldSize.y);
-
 	if(mTextSprite) {
 		mTextSprite->setResizeLimit(mEntryFieldSettings.mFieldSize.x, mEntryFieldSettings.mFieldSize.y);
-		mEngine.getEngineCfg().getText(newSettings.mTextConfig).configure(*mTextSprite);
+		mTextSprite->setTextStyle(newSettings.mTextConfig);
 		mTextSprite->setPosition(mEntryFieldSettings.mTextOffset);
 	}
+
+	setSize(mEntryFieldSettings.mFieldSize.x, mEntryFieldSettings.mFieldSize.y);
 
 	if(mCursor) {
 		mCursor->setColor(newSettings.mCursorColor);
@@ -69,8 +70,17 @@ ds::ui::EntryFieldSettings EntryField::getEntryFieldSettings() {
 }
 
 void EntryField::onSizeChanged() {
-	if(mTextSprite) {
-		//mTextSprite->setResizeLimit(getWidth(), getHeight());
+	if (mTextSprite) {
+		if (mEntryFieldSettings.mAutoExpand) {
+			mTextSprite->setResizeLimit(getWidth(), 0.0f);
+			auto newTextHeight = mTextSprite->getHeight();
+			if(newTextHeight != getHeight()){
+				setSize(getWidth(), newTextHeight);
+			}
+
+		} else if (mEntryFieldSettings.mAutoResize) {
+			mTextSprite->setResizeLimit(getWidth(), getHeight());
+		}
 	}
 }
 
@@ -247,6 +257,21 @@ void EntryField::setCursorIndex(const size_t index) {
 	cursorUpdated();
 }
 
+void EntryField::setCursorPosition(const ci::vec3& globalPos) {
+	ci::vec3 loccy = mTextSprite->globalToLocal(globalPos);
+	mCursorIndex = mTextSprite->getCharacterIndexForPosition(ci::vec2(loccy));
+
+	cursorUpdated();
+}
+
+const ci::vec3 EntryField::getCursorPosition() {
+	if(mCursor){
+		return mCursor->getGlobalPosition();
+	}
+
+	return ci::vec3();
+}
+
 void EntryField::resetCurrentText() {
 	setCurrentText(L"");
 	if(mKeyPressedFunction) {
@@ -305,6 +330,13 @@ void EntryField::autoRegisterOnFocus(const bool doAutoRegister) {
 }
 
 void EntryField::textUpdated() {
+	if (mEntryFieldSettings.mAutoExpand) {
+		auto newTextHeight = mTextSprite->getHeight();
+		if (newTextHeight != getHeight()) {
+			setSize(getWidth(), newTextHeight);
+		}
+	}
+
 	cursorUpdated();
 	onTextUpdated();
 
@@ -324,14 +356,9 @@ void EntryField::cursorUpdated() {
 	}
 }
 
-
 void EntryField::handleTouchInput(ds::ui::Sprite* bs, const ds::ui::TouchInfo& ti) {
-
 	if(ti.mPhase != ds::ui::TouchInfo::Removed && mTextSprite) {
-		ci::vec3 loccy = mTextSprite->globalToLocal(ti.mCurrentGlobalPoint);
-		mCursorIndex = mTextSprite->getCharacterIndexForPosition(ci::vec2(loccy));
-
-		cursorUpdated();
+		setCursorPosition(ti.mCurrentGlobalPoint);
 	}
 }
 

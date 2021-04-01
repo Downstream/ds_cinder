@@ -1,58 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
 <settings>
 	<setting name="SERVER SETTINGS" value="" type="section_header"/>
-	<setting name="project_path" value="example/scroll" type="string" comment="Project path for locating app resources"/>
+	<setting name="project_path" value="downstream" type="string" comment="Project path for locating app resources"/>
 	<setting name="server:connect" value="false" type="bool" comment="If false, won't connect udp sender / listener for server or client" default="false"/>
 	<setting name="server:ip" value="239.255.42.58" type="string" comment="The multicast group udp address and port of the server" default="239.255.42.58"/>
-	<setting name="server:send_port" value="10370" type="int" comment="The send port of the server. Match these between server and client" default="1037" min_value="1" max_value="99999"/>
-	<setting name="server:listen_port" value="10371" type="int" comment="The listen port of the server (which is what the client sends on). Match these between server and client." default="1038" min_value="1" max_value="99999"/>
-	<setting name="platform:architecture" value="" type="string" comment="If this is a server (world engine), a client (render engine) or both (world + render). clientserver is an EngineClientServer, which both displays content and can control other instances. standalone does not transmit or receive." default="standalone" possibles="standalone, client, server, clientserver"/>
-	<setting name="platform:guid" value="example" type="string" comment="Unique identifier for network traffic (appended by additional unique values)." default="Downstream"/>
+	<setting name="server:send_port" value="1037" type="int" comment="The send port of the server. Match these between server and client" default="1037" min_value="1" max_value="99999"/>
+	<setting name="server:listen_port" value="1038" type="int" comment="The listen port of the server (which is what the client sends on). Match these between server and client." default="1038" min_value="1" max_value="99999"/>
+	<setting name="platform:architecture" value="standalone" type="string" comment="If this is a server (world engine), a client (render engine) or both (world + render). clientserver is an EngineClientServer, which both displays content and can control other instances. standalone does not transmit or receive." default="standalone" possibles="standalone, client, server, clientserver"/>
+	<setting name="platform:guid" value="scroll_example_app" type="string" comment="Unique identifier for network traffic (appended by additional unique values)." default="Downstream"/>
+	<setting name="xml_importer:cache" value="true" type="bool" comment="If the xml importer should cache xml content or reload from disk each time" default="true"/>
+	<setting name="xml_importer:target" value="default" type="string" comment="target for xml importer target properties to match" default="default"/>
 	<setting name="WINDOW SETTINGS" value="" type="section_header"/>
-	<setting name="world_dimensions" value="1920, 1080" type="vec2" comment="The size of the overall app space." default="1920, 1080"/>
-	<setting name="src_rect" value="0, 0, 1920.000000, 1080.000000" type="rect" comment="The rectangle of the world space to render."/>
-	<setting name="dst_rect" value="0, 0, 1920.000000, 1080.000000" type="rect" comment="The output window size and position to render."/>
-	<setting name="screen:title" value="ScrollExample" type="string" comment="The title of the window. Generally only displays if the screen mode is windowed."/>
+	<setting name="span_all_displays" value="false" type="bool" comment="Automatically spans displays and overrides world size, src/dst rect and screen:mode" default="false"/>
+	<setting name="world_dimensions" value="3840, 2160" type="vec2" comment="The size of the overall app space." default="1920, 1080"/>
+	<setting name="src_rect" value="" type="rect" comment="The rectangle of the world space to render."/>
+	<setting name="dst_rect" value="" type="rect" comment="The output window size and position to render."/>
+	<setting name="screen:title" value="" type="string" comment="The title of the window. Generally only displays if the screen mode is windowed."/>
 	<setting name="screen:mode" value="borderless" type="string" comment="How the primary window displays, including fullscreen" default="borderless" possibles="window, borderless, fullscreen"/>
 	<setting name="screen:always_on_top" value="false" type="bool" comment="Makes the window an always-on-top sort of window." default="false"/>
+	<setting name="screen:auto_size" value="letterbox" type="string" comment="Classic uses the old src_rect/dst_rect and span_all_displays; letterbox will letterbox to your main monitor; all_span spans all displays; main_span fills the main display. letterbox requires having a world size set." default="classic" possibles="classic, letterbox, all_span, main_span"/>
 	<setting name="console:show" value="true" type="bool" comment="Show console will create a console window, or not if this is false." default="false"/>
 	<setting name="idle_time" value="300" type="double" comment="Seconds before idle happens. 300 = 5 minutes." default="300" min_value="0" max_value="1000"/>
+	<setting name="system:never_sleep" value="true" type="bool" comment="Prevent the system from sleeping or powering off the screen" default="true"/>
+	<setting name="apphost:exit_on_quit" value="true" type="bool" comment="Exit apphost when quitting the app" default="true"/>
+	<setting name="resetup_server_on_display_change" value="true" type="bool" comment="Resetup the server when the display changes" default="false"/>
 	<setting name="RENDER SETTINGS" value="" type="section_header"/>
 	<setting name="frame_rate" value="60" type="int" comment="Attempt to run the app at this rate" default="60" min_value="1" max_value="1000"/>
 	<setting name="vertical_sync" value="true" type="bool" comment="Attempts to align frame rate with the refresh rate of the monitor. Note that this could be overriden by the graphic card" default="true"/>
+	<setting name="auto_hide_mouse" value="true" type="bool" comment="True=automatically hide the mouse when mouse hasn't been moved, false=use hide_mouse setting" default="true"/>
 	<setting name="hide_mouse" value="false" type="bool" comment="False=cursor visible, true=no visible cursor." default="false"/>
-	<setting name="camera:arrow_keys" value="-1.0" type="float" comment="How much to step the camera when using the arrow keys. Set to a value above 0.025 to enable arrow key usage." default="-1.0" min_value="-1.0" max_value="200.0"/>
+	<setting name="camera:arrow_keys" value="30.0" type="float" comment="How much to step the camera when using the arrow keys. Set to a value above 0.025 to enable arrow key usage." default="-1.0" min_value="-1.0" max_value="200.0"/>
 	<setting name="platform:mute" value="false" type="bool" comment="Mutes all video sound if true" default="false"/>
+	<setting name="animation:duration" value="0.35" type="float" comment="Standard duration for animations" default="0.35" min_value="0.0" max_value="10.0"/>
+	<setting name="load_image:threads" value="1" type="float" comment="Number of threads to spawn for image loading" default="1" min_value="1" max_value="32"/>
+	<setting name="font_scale" value="1.3333333333333" type="float" comment="text sprites with scale font values by this amount" default="1.3333333333333" min_value="0.001" max_value="1000.0"/>
 	<setting name="TOUCH SETTINGS" value="" type="section_header"/>
-	<setting name="touch:mode" value="TuioAndMouse" type="string" comment="Set the current touch mode: Tuio, TuioAndMouse, System, SystemAndMouse, All." default="SystemAndMouse" possibles="Tuio, TuioAndMouse, System, SystemAndMouse, All"/>
+	<setting name="touch:mode" value="SystemAndMouse" type="string" comment="Set the current touch mode: Tuio, TuioAndMouse, System, SystemAndMouse, All." default="SystemAndMouse" possibles="Tuio, TuioAndMouse, System, SystemAndMouse, All"/>
 	<setting name="touch:tuio:port" value="3333" type="int" comment="UDP Port to listen to tuio stream." default="3333" min_value="1" max_value="9999"/>
 	<setting name="touch:tuio:receive_objects" value="false" type="bool" comment="Will allow tuio to receive object data." default="false"/>
 	<setting name="touch:override_translation" value="false" type="bool" comment="Override the built-in touch scale and offset parsing. It's uncommon you'll need to do this. Default is to use the built-in Cinder touch translation, which is generally correct if the window is the same pixel size as the main screen and not scaled at all." default="false"/>
 	<setting name="touch:dimensions" value="1920, 1080" type="vec2" comment="How large in screen pixels the touch input stream covers" default="1920, 1080"/>
 	<setting name="touch:offset" value="0, 0" type="vec2" comment="How much to offset touch input in pixels" default="0, 0"/>
-	<setting name="touch:filter_rect" value="10, 10, 1900.000000, 1060.000000" type="rect" comment="Any touches started outside this rect will be ignored, in world space. Set to 0, 0, 0, 0 to ignore." default="0, 0, 0, 0"/>
-	<setting name="touch:verbose_logging" value="false" type="bool" comment="Prints out info for every touch info. Also can be set at runtime using shift-V." default="false"/>
+	<setting name="touch:filter_rect" value="0, 0, 0, 0" type="rect" comment="Any touches started outside this rect will be ignored, in world space. Set to 0, 0, 0, 0 to ignore." default="0, 0, 0, 0"/>
 	<setting name="touch:debug" value="true" type="bool" comment="Draw circles around touch points " default="true"/>
 	<setting name="touch:debug_circle_radius" value="15" type="float" comment="Visual settings for touch debug circles." default="15" min_value="1" max_value="100"/>
-	<setting name="touch:debug_circle_color" value="#ffffffff" type="color" comment="The color of the touch debug circles" default="#ffffff"/>
+	<setting name="touch:debug_circle_color" value="#ffffff" type="color" comment="The color of the touch debug circles" default="#ffffff"/>
 	<setting name="touch:debug_circle_filled" value="false" type="bool" comment="If the touch debug circles are a filled or stroked circle." default="false"/>
 	<setting name="touch:rotate_touches_default" value="false" type="bool" comment="Rotates touch points if the sprite getting touched is rotated. Helpful for table situations that can have sprites rotated 180 degrees or whatnot." default="false"/>
-	<setting name="touch:tap_threshold" value="40" type="float" comment="How far a touch moves before it's not a tap, in pixels." default="30" min_value="0" max_value="200"/>
+	<setting name="touch:tap_threshold" value="30" type="float" comment="How far a touch moves before it's not a tap, in pixels." default="30" min_value="0" max_value="200"/>
 	<setting name="touch:minimum_distance" value="20.0" type="float" comment="How many pixels away from an existing touch point for a new touch to be considered valid." default="20.0" min_value="1.0" max_value="300"/>
 	<setting name="touch:smoothing" value="true" type="bool" comment="Average out touch points over time for smoother input, but slightly less accurate." default="true"/>
-	<setting name="touch:smooth_frames" value="8" type="int" comment="How many frames to use when smoothing. Higher numbers are smoother. Lower than 3 is effectively off." default="5" min_value="1" max_value="64"/>
+	<setting name="touch:smooth_frames" value="5" type="int" comment="How many frames to use when smoothing. Higher numbers are smoother. Lower than 3 is effectively off." default="5" min_value="1" max_value="64"/>
 	<setting name="touch:swipe:queue_size" value="4" type="int" comment="How many frames of touch swipe info to account for when calculating swipes" default="4" min_value="1" max_value="16"/>
 	<setting name="touch:swipe:minimum_velocity" value="800.0" type="float" comment="The velocity a swipe needs to exceed to count as a swipe" default="800.0" min_value="1.0" max_value="2400"/>
 	<setting name="touch:swipe:maximum_time" value="0.5" type="float" comment="How long a swipe can last to be counted as a swipe" default="0.5" min_value="0.0" max_value="3.0"/>
 	<setting name="RESOURCE SETTINGS " value="" type="section_header"/>
-	<setting name="resource_location" value="" type="string" comment="Resource location and database for cms content"/>
-	<setting name="resource_db" value="" type="string" comment="Path of the database relative to the resource_location. E.g. ../db/database.sqlite"/>
+	<setting name="resource_location" value="%APP%/data/" type="string" comment="Resource location and database for cms content"/>
+	<setting name="resource_db" value="db.sqlite" type="string" comment="Path of the database relative to the resource_location. E.g. ../db/database.sqlite"/>
 	<setting name="configuration_folder:allow_expand_override" value="false" type="bool" comment="Allows you to place any relative file in a configuration folder. For instance, you could have a layout file specific to a particular configuration." default="false"/>
+	<setting name="cms:url" value="DS_BASEURL" type="string" comment="The URL of a Content Management System, set as DS_BASE_URL to use that env variable." default="DS_BASEURL"/>
 	<setting name="node:refresh_rate" value="0.1" type="float" comment="If your app uses a NodeWatcher, how often to check for node updates" default="0.1" min_value="0.001" max_value="10.0"/>
+	<setting name="content:node_watch" value="true" type="bool" comment="If ContentWrangler should automatically listen to dsnode messages on udp localhost port 7777" default="true"/>
+	<setting name="content:model_location" value="%APP%/data/model/content_model.xml" type="string" comment="Where ContentWrangler should look for an xml file that describes a data model to load sqlite data. Specify multiple locations separated by a semicolon" default="%APP%/data/model/content_model.xml"/>
+	<setting name="content:use_wrangler" value="true" type="bool" comment=" If ContentWrangler should be used to automatically grab data" default="true"/>
+	<setting name="auto_refresh_app" value="true" type="bool" comment="Listen to directory changes and auto soft-restart the app." default="false"/>
+	<setting name="auto_refresh_directories" value="%APP%/data;%APP%/settings" type="string" comment="Semi-colon separated list of directories to listen to to restart the app." default="%APP%"/>
 	<setting name="LOGGER" value="" type="section_header"/>
 	<setting name="logger:level" value="all" type="string" comment="What level of log to log." default="all" possibles="all, none, info, warning, error, fatal"/>
 	<setting name="logger:module" value="all" type="string" comment="all,none, or numbers (i.e. 0,1,2,3).  Applications map the numbers to specific modules." default="all"/>
 	<setting name="logger:async" value="true" type="string" comment="Whether to save logs on another thread or the main one." default="true"/>
 	<setting name="logger:file" value="%LOCAL%/logs/" type="string" comment="Filename and location" default="%LOCAL%/logs/"/>
+	<setting name="logger:verbose_level" value="0" type="int" comment="How much verbose output to log. 0=nothing, 9=everything" default="0" min_value="0" max_value="9"/>
+	<setting name="METRICS" value="" type="section_header"/>
+	<setting name="metrics:active" value="true" type="bool" comment="Enable telegraf metrics sending" default="true"/>
+	<setting name="metrics:send_base_info" value="true" type="bool" comment="Send common engine info like fps and number of sprites" default="true"/>
+	<setting name="metrics:base_info_send_delay" value="5.0" type="double" comment="How often to send the base info in seconds" default="5.0" min_value="0.5" max_value="100"/>
+	<setting name="metrics:send_touch_info" value="false" type="bool" comment="Record touch data or not" default="false"/>
+	<setting name="metrics:udp_host" value="127.0.0.1" type="string" comment="The host name to send udp metrics info to" default="127.0.0.1"/>
+	<setting name="metrics:udp_port" value="8094" type="string" comment="The port to send udp metrics info to" default="8089"/>
+	<setting name="load_image:create_texture_on_main_thread" value="false" type="bool" comment="True will create the gl texture on the main thread. Only use if you have issues with delayed image loading, typically in fullscreen" default="false"/>
 </settings>
 

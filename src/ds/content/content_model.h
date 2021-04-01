@@ -134,6 +134,7 @@ class ContentModelRef {
 	/// Tests if this ContentModelRef has the same Id, Name, Label and underlying data pointer
 	bool operator==(const ContentModelRef&) const;
 
+	bool operator!=(const ContentModelRef&) const;
 
 	/// Use this for looking stuff up only. Recommend using the other functions to manage the list
 	const std::map<std::string, ContentProperty>& getProperties();

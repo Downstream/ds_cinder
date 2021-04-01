@@ -392,9 +392,17 @@ void LayoutSprite::fitInside(ds::ui::Sprite* sp, const ci::Rectf area, const boo
 	// w = ah;
 	const float spriteAspect = sp->getWidth() / sp->getHeight();
 	const float areaAspect = area.getWidth() / area.getHeight();
+	bool finalLetterbox = letterbox;
 	float destScale = sp->getScale().x;
+	if (sp->mLayoutFixedAspectMode == kAspectFill) {
+		finalLetterbox = false;
+	}
+	else if (sp->mLayoutFixedAspectMode == kAspectLetterbox) {
+		finalLetterbox = true;
+	}
 
-	if(letterbox){
+
+	if(finalLetterbox){
 		// When letterboxing, if the sprite is narrower then the dest area, fill the height
 		if(spriteAspect < areaAspect){
 			destScale = area.getHeight() / sp->getHeight();

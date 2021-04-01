@@ -5,7 +5,7 @@
 #include "Box2D/Dynamics/b2Fixture.h"
 #include "ds/physics/sprite_body.h"
 #include "ds/debug/logger.h"
-#include "private/world.h"
+#include "world.h"
 
 namespace ds {
 namespace physics {

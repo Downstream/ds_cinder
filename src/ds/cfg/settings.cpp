@@ -28,6 +28,7 @@ const std::string&				SETTING_TYPE_VEC2 = "vec2";
 const std::string&				SETTING_TYPE_VEC3 = "vec3";
 const std::string&				SETTING_TYPE_RECT = "rect";
 const std::string&				SETTING_TYPE_SECTION_HEADER = "section_header";
+const std::string&				SETTING_TYPE_TEXT_STYLE = "text_style";
 
 namespace {
 
@@ -49,6 +50,7 @@ void initialize_types(){
 		SETTING_TYPES.emplace_back(SETTING_TYPE_VEC3);
 		SETTING_TYPES.emplace_back(SETTING_TYPE_RECT);
 		SETTING_TYPES.emplace_back(SETTING_TYPE_SECTION_HEADER);
+		SETTING_TYPES.emplace_back(SETTING_TYPE_TEXT_STYLE);
 	}
 }
 
@@ -198,14 +200,14 @@ void Settings::readFrom(const std::string& filename, const bool append){
 	merge_settings(mSettings, s.mSettings);
 }
 
-void Settings::readFrom(ci::XmlTree& tree, const std::string& filename, const bool append) {
+void Settings::readFrom(ci::XmlTree& tree, const std::string& filename, const bool append, ds::ui::SpriteEngine* engPtr) {
 	if (!append) {
-		directReadFromXml(tree,filename, true);
+		directReadFromXml(tree,filename, true,engPtr);
 		return;
 	}
 
 	Settings		s;
-	s.directReadFromXml(tree, filename, false);
+	s.directReadFromXml(tree, filename, false,engPtr);
 
 	merge_settings(mSettings, s.mSettings);
 }
@@ -217,7 +219,7 @@ void Settings::directReadFrom(const std::string& filename, const bool clearAll){
 		return;
 	}
 
-	if(!safeFileExistsCheck(filename)){
+	if(!safeFileExistsCheck(filename, false)){
 		return;
 	}
 
@@ -233,7 +235,7 @@ void Settings::directReadFrom(const std::string& filename, const bool clearAll){
 	directReadFromXml(xml, filename, clearAll);
 }
 
-void Settings::directReadFromXml(ci::XmlTree& tree, const std::string& referenceFilename,  const bool clearAll) {
+void Settings::directReadFromXml(ci::XmlTree& tree, const std::string& referenceFilename,  const bool clearAll,ds::ui::SpriteEngine* engPtr) {
 	if (clearAll) clear();
 
 	ci::XmlTree& xml = tree;
@@ -243,6 +245,15 @@ void Settings::directReadFromXml(ci::XmlTree& tree, const std::string& reference
 		if (!it->hasAttribute("name")) {
 			DS_LOG_WARNING("Missing a name attribute for a setting!");
 			continue;
+		}
+
+		if (engPtr) {
+			if (it->hasAttribute("target")) {
+				auto target = it->getAttributeValue<std::string>("target");
+				if (!engPtr->hasLayoutTarget(target)) {
+					continue;
+				}
+			}
 		}
 
 		std::string theName = it->getAttributeValue<std::string>("name");
@@ -258,7 +269,8 @@ void Settings::directReadFromXml(ci::XmlTree& tree, const std::string& reference
 		if (it->hasAttribute("max_value"))	theSetting.mMaxValue = it->getAttributeValue<std::string>("max_value");
 		if (it->hasAttribute("type"))		theSetting.mType = it->getAttributeValue<std::string>("type");
 		if (it->hasAttribute("possibles"))	theSetting.mPossibleValues = it->getAttributeValue<std::string>("possibles");
-
+		
+		
 		if (!validateType(theSetting.mType)) {
 			DS_LOG_WARNING("Unknown setting type for " << theName << " type:" << theSetting.mType << " source: " << referenceFilename);
 		}

@@ -34,11 +34,11 @@ bool EnvCheck::addGStreamerBinPath(){
 
 	// Some installs were having issues with the registry getting funked up on multiple runs
 	// If we manually set the registry to the app directory, it can avoid some issues
-	std::string registryPath{ getEnv("GST_REGISTRY_1_0") };
-	if(registryPath.empty()) {
-		std::string localRegistryPath = ds::Environment::expand("%LOCAL%/cache/.gstcache");
-		ds::Environment::replaceEnvironmentVariable("GST_REGISTRY_1_0", localRegistryPath);
-	}
+	// std::string registryPath{ getEnv("GST_REGISTRY_1_0") };
+	// if(registryPath.empty()) {
+	// 	std::string localRegistryPath = ds::Environment::expand("%LOCAL%/cache/.gstcache");
+	// 	ds::Environment::replaceEnvironmentVariable("GST_REGISTRY_1_0", localRegistryPath);
+	// }
 
 
 	std::string path_variable{ getEnv("PATH") };

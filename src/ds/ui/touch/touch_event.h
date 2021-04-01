@@ -13,9 +13,9 @@ namespace ui {
 */
 class TouchEvent : public ci::app::TouchEvent {
 public:
-	TouchEvent(): mInWorldSpace(false){};
+	TouchEvent() = delete;
 	TouchEvent(ci::app::TouchEvent& cinderEvent)
-		: ci::app::TouchEvent(cinderEvent), mInWorldSpace(false){}
+		: ci::app::TouchEvent(cinderEvent){}
 	TouchEvent(ci::app::WindowRef win, const std::vector<ci::app::TouchEvent::Touch> &touches, const bool inWorldSpace = false)
 		: ci::app::TouchEvent(win, touches), mInWorldSpace(inWorldSpace){}
 
@@ -27,7 +27,7 @@ public:
 
 
 private:
-	bool				mInWorldSpace;
+	bool				mInWorldSpace = false;
 };
 
 } // namespace ui

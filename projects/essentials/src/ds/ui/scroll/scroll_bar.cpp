@@ -152,13 +152,13 @@ void ScrollBar::onSizeChanged(){
 }
 
 void ScrollBar::updateNubPosition(){
-	if(mNub){
+	if(mNub && mBackground){
 		if(mVertical){
 			float nubSize = getHeight() * mPercentVisible;
 			if(nubSize < mMinNubSize) {
 				nubSize = mMinNubSize;
 			}
-			mNub->setSize(mNub->getWidth(), nubSize);
+			mNub->setSize(mBackground->getWidth(), nubSize);
 
 			if(getPerspective()){
 				mNub->setPosition(mTouchPadding, (1.0f - mScrollPercent) * (getHeight() - nubSize));
@@ -170,7 +170,7 @@ void ScrollBar::updateNubPosition(){
 			if(nubSize < mMinNubSize) {
 				nubSize = mMinNubSize;
 			}
-			mNub->setSize(nubSize, mNub->getHeight());
+			mNub->setSize(nubSize, mBackground->getHeight());
 			mNub->setPosition(getWidth() * mScrollPercent - mScrollPercent * mNub->getWidth(), mTouchPadding);
 		}
 	}

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<settings>
+
+	<setting name="ui:padding" value="30" type="float" />	
+	
+	<setting name="line:opacity" value="0.5" type="float" />
+	<setting name="line:size" value="1.0, 1.0" type="vec2" />
+	
+	<setting name="default:delay" value="0.01" />
+	<setting name="default:anim" value="fade; slide:200, 0; ease:outQuint; delay:$_default:delay" />
+	
+	<setting name="scroll_list:item_size" value="300" />
+</settings>
+
+

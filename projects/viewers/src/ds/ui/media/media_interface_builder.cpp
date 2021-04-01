@@ -23,8 +23,18 @@ namespace ds {
 namespace ui {
 namespace MediaInterfaceBuilder {
 
+static MediaInterfaceFactoryFunc builderFunc;
 
-MediaInterface* buildMediaInterface(ds::ui::SpriteEngine& engine, ds::ui::Sprite* mediaPlayer, ds::ui::Sprite* parentSprite,const ci::Color buttonColor, const ci::Color backgroundColor) {
+MediaInterface* buildMediaInterface(ds::ui::SpriteEngine& engine, ds::ui::Sprite* mediaPlayer, ds::ui::Sprite* parentSprite, const ci::Color buttonColor, const ci::Color backgroundColor) {
+	if (builderFunc) {
+		return builderFunc(engine, mediaPlayer, parentSprite, buttonColor, backgroundColor);
+	}
+	else {
+		return defaultBuildMediaInterface(engine, mediaPlayer, parentSprite, buttonColor, backgroundColor);
+	}
+}
+
+MediaInterface* defaultBuildMediaInterface(ds::ui::SpriteEngine& engine, ds::ui::Sprite* mediaPlayer, ds::ui::Sprite* parentSprite,const ci::Color buttonColor, const ci::Color backgroundColor) {
 	MediaInterface* outputMi = nullptr;
 
 	if (!parentSprite || !mediaPlayer) {
@@ -98,6 +108,19 @@ MediaInterface* buildMediaInterface(ds::ui::SpriteEngine& engine, ds::ui::Sprite
 
 	return outputMi;
 }
+
+void setBuilderFunc(MediaInterfaceFactoryFunc builder) {
+	builderFunc = builder;
+}
+
+MediaInterfaceFactoryFunc getBuilderFunc() {
+	auto temp = builderFunc;
+	if (!temp) {
+		temp = defaultBuildMediaInterface;
+	}
+	return temp;
+}
+
 
 }  // namespace MediaInterfaceBuilder
 }  // namespace ui
